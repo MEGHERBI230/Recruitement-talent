@@ -65,7 +65,7 @@ function PostesPage() {
     setForm({
       intitule: p.intitule, bu: p.bu, quantite: p.quantite, priorite: p.priorite,
       experienceMin: p.experienceMin, diplome: p.diplome,
-      competences: p.competences.join(", "), machines: p.machines.join(", "),
+      competences: p.competences.join(", "), machines: [...p.machines],
     });
     setOpen(true);
   };
@@ -73,7 +73,7 @@ function PostesPage() {
   const submit = () => {
     if (!form.intitule.trim()) { toast.error("L'intitulé est requis"); return; }
     const competences = form.competences.split(",").map((s) => s.trim()).filter(Boolean);
-    const machines = form.machines.split(",").map((s) => s.trim()).filter(Boolean);
+    const machines = form.machines.filter(Boolean);
     if (editId) {
       updatePoste(editId, { ...form, competences, machines });
       toast.success("Poste modifié");
@@ -83,6 +83,10 @@ function PostesPage() {
     }
     setOpen(false);
   };
+
+  const addMachineSlot = () => setForm((f) => ({ ...f, machines: [...f.machines, ""] }));
+  const setMachineAt = (i: number, v: string) => setForm((f) => ({ ...f, machines: f.machines.map((m, idx) => (idx === i ? v : m)) }));
+  const removeMachineAt = (i: number) => setForm((f) => ({ ...f, machines: f.machines.filter((_, idx) => idx !== i) }));
 
   const confirmDelete = () => {
     if (delId) {
