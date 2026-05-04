@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -10,9 +10,12 @@ import {
   Users,
   TrendingUp,
   AlertTriangle,
+  Factory,
 } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
-import { POSTES, MACHINES, CANDIDATS, BU_LABELS, BU, PRIORITY_LABELS } from "@/data/cirta";
+import { POSTES, MACHINES, BU_LABELS, BU, PRIORITY_LABELS } from "@/data/cirta";
+import { useCirta } from "@/store/useCirta";
+import { buReadiness } from "@/lib/scoring";
 
 export const Route = createFileRoute("/")({
   component: Dashboard,
