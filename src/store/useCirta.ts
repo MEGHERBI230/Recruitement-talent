@@ -5,7 +5,7 @@ import { CANDIDATS, Candidat, CandidatStatut } from "@/data/cirta";
 export interface EntretienData {
   candidatId: string;
   date?: string;
-  notes: Record<string, number>; // criterion -> 0..5
+  reponses: Record<string, number>;
   commentaires: string;
   scoreGlobal?: number;
 }
