@@ -150,3 +150,13 @@
     color: var(--color-foreground);
   }
 }
+
+/* Print styles for professional reports */
+@media print {
+  @page { size: A4; margin: 14mm; }
+  body { background: white !important; }
+  [data-sidebar], header.sticky, .no-print { display: none !important; }
+  main { padding: 0 !important; }
+  .print-area { box-shadow: none !important; }
+  .print-break { page-break-before: always; }
+}
