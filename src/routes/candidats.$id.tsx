@@ -4,12 +4,21 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { useCirta } from "@/store/useCirta";
-import { scoreCandidat, recoCls } from "@/lib/scoring";
+import { useCirta, type CandidatTag } from "@/store/useCirta";
+import { scoreCandidat, recoCls, risqueCls } from "@/lib/scoring";
 import { STATUT_LABELS, BU_LABELS, BU_COLORS, POSTES, CandidatStatut } from "@/data/cirta";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Sparkles, FileText, ClipboardCheck, FlaskConical, Users, Printer, CheckCircle2, XCircle } from "lucide-react";
+import { ArrowLeft, Sparkles, FileText, ClipboardCheck, FlaskConical, Users, Printer, CheckCircle2, XCircle, AlertTriangle, Tag } from "lucide-react";
 import { toast } from "sonner";
+
+const TAG_LABELS: Record<CandidatTag, { label: string; cls: string }> = {
+  urgent: { label: "Urgent", cls: "bg-destructive/10 text-destructive border-destructive/30" },
+  a_former: { label: "À former", cls: "bg-warning/15 text-warning border-warning/30" },
+  bon_profil: { label: "Bon profil", cls: "bg-success/15 text-success border-success/30" },
+  fort_potentiel: { label: "Fort potentiel", cls: "bg-primary/15 text-primary border-primary/30" },
+  a_revoir: { label: "À revoir", cls: "bg-info/15 text-info border-info/30" },
+  rejete_def: { label: "Rejeté définitif", cls: "bg-destructive/10 text-destructive border-destructive/30" },
+};
 
 export const Route = createFileRoute("/candidats/$id")({ component: FicheCandidat });
 
