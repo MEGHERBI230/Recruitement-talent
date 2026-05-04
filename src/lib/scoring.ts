@@ -1,4 +1,6 @@
-import { Candidat, Poste, POSTES } from "@/data/cirta";
+import { Candidat, Poste, POSTES, MACHINES } from "@/data/cirta";
+
+export type RisqueNiveau = "faible" | "moyen" | "élevé";
 
 export interface ScoreBreakdown {
   total: number;
@@ -6,10 +8,17 @@ export interface ScoreBreakdown {
   experience: number;  // /25
   diplome: number;     // /15
   machines: number;    // /20
+  technique: number;       // 0-100
+  terrain: number;         // 0-100
+  autonomie: number;       // 0-100
+  comportement: number;    // 0-100
+  risque: RisqueNiveau;
   recommandation: "FORT" | "BON" | "MOYEN" | "FAIBLE" | "REJET";
   forces: string[];
   faiblesses: string[];
   posteId?: string;
+  matchMachines: { req: string[]; have: string[]; matched: string[] };
+  readinessAtelier: number;
 }
 
 const DIPLOME_RANK: Record<string, number> = {
