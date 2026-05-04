@@ -16,6 +16,9 @@ export function Letterhead({ title, subtitle }: { title: string; subtitle?: stri
       <div className="mt-4 mb-2 text-center">
         <div className="text-lg font-bold uppercase">{title}</div>
         {subtitle && <div className="text-sm">{subtitle}</div>}
+        <div className="mt-1 text-xs italic">
+          Document établi par <span className="font-bold not-italic">M. MEGHERBI Nabil</span> — Directeur des Opérations, CIRTA AUTOMOTIVE
+        </div>
       </div>
     </div>
   );
