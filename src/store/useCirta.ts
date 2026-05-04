@@ -3,29 +3,44 @@ import { persist } from "zustand/middleware";
 import { CANDIDATS, Candidat, CandidatStatut, POSTES, Poste, MACHINES, Machine } from "@/data/cirta";
 
 export interface MachineExt extends Machine {
-  image?: string; // dataURL
+  image?: string;
 }
 
+export interface InterviewQA { question: string; objectif: string; categorie: string }
+export interface InterviewAnalyse { score: number; recommandation: "FORT" | "BON" | "MOYEN" | "FAIBLE" | "REJET"; forces: string[]; faiblesses: string[]; synthese: string }
 export interface EntretienData {
   candidatId: string;
   date?: string;
-  reponses: Record<string, number>;
-  commentaires: string;
+  questions?: InterviewQA[];
+  reponses?: string[];
+  analyse?: InterviewAnalyse;
   scoreGlobal?: number;
 }
+
+export interface PracticalCritere { id: string; label: string; bareme: number }
+export interface PracticalTestDef { titre: string; duree: string; materiel: string[]; consigne: string; etapes: string[]; securite: string[]; criteres: PracticalCritere[] }
+export interface PracticalAnalyse { notes: { id: string; note: number; justification: string }[]; total: number; verdict: string; commentaires: string }
 export interface TestData {
   candidatId: string;
   date?: string;
-  reponses: Record<string, number>; // questionId -> 0..5
-  observations: string;
+  test?: PracticalTestDef;
+  observations?: string;
+  photos?: string[]; // dataURLs
+  scanReponses?: string;
+  analyse?: PracticalAnalyse;
   scoreGlobal?: number;
 }
+
+export interface BehaviorQA { question: string; axe: string }
+export interface BehaviorAnalyse { score: number; profil: string; forces: string[]; risques: string[]; synthese: string }
 export interface ComportementData {
   candidatId: string;
   date?: string;
-  reponses: Record<string, number>;
+  questions?: BehaviorQA[];
+  reponses?: string[];
+  scanReponses?: string;
+  analyse?: BehaviorAnalyse;
   scoreGlobal?: number;
-  commentaires: string;
 }
 
 export interface CandidatExt extends Candidat {
@@ -88,11 +103,11 @@ export const useCirta = create<State>()(
       addMachine: (m) => set((st) => ({ machines: [m, ...st.machines] })),
       updateMachine: (id, patch) => set((st) => ({ machines: st.machines.map((m) => (m.id === id ? { ...m, ...patch } : m)) })),
       deleteMachine: (id) => set((st) => ({ machines: st.machines.filter((m) => m.id !== id) })),
-      saveEntretien: (d) => set((st) => ({ entretiens: { ...st.entretiens, [d.candidatId]: d } })),
-      saveTest: (d) => set((st) => ({ tests: { ...st.tests, [d.candidatId]: d } })),
-      saveComportement: (d) => set((st) => ({ comportements: { ...st.comportements, [d.candidatId]: d } })),
+      saveEntretien: (d) => set((st) => ({ entretiens: { ...st.entretiens, [d.candidatId]: { ...st.entretiens[d.candidatId], ...d } } })),
+      saveTest: (d) => set((st) => ({ tests: { ...st.tests, [d.candidatId]: { ...st.tests[d.candidatId], ...d } } })),
+      saveComportement: (d) => set((st) => ({ comportements: { ...st.comportements, [d.candidatId]: { ...st.comportements[d.candidatId], ...d } } })),
       reset: () => set({ candidats: seedExt, postes: POSTES, machines: MACHINES as MachineExt[], entretiens: {}, tests: {}, comportements: {} }),
     }),
-    { name: "cirta-store-v2" },
+    { name: "cirta-store-v3" },
   ),
 );
