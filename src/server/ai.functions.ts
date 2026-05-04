@@ -86,18 +86,26 @@ Mix : 2 motivation/parcours, 4 techniques précises (machines/process), 2 sécur
 export const generatePracticalTest = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => d as { poste: string; bu: string; machines?: string[]; competences?: string[] })
   .handler(async ({ data }) => {
-    const sys = "Tu es un chef d'atelier industriel expert. Tu conçois des tests pratiques atelier réalistes et imprimables, à remettre au candidat sur papier.";
-    const user = `Conçois un test pratique atelier pour le poste : ${data.poste} (BU ${data.bu}).
-Machines à utiliser : ${(data.machines ?? []).join(", ") || "selon disponibilité"}.
+    const sys = "Tu es chef d'atelier industriel CIRTA AUTOMOTIVE. Tu conçois des tests pratiques ATELIER ULTRA-LÉGERS, RÉALISTES, FAISABLES SANS MOBILISER LA PRODUCTION. Le recruteur ne dispose PAS d'une vraie machine en marche, ni de programme G/Siemens/Fanuc à exécuter, ni de zéro machine, ni d'EPI complets, ni de matière première coûteuse. Le test doit être réalisable avec UN MINIMUM de matériel d'atelier courant.";
+    const user = `Conçois un test pratique ALLÉGÉ pour le poste : ${data.poste} (BU ${data.bu}).
+Machines de référence (à titre théorique seulement, NE PAS exiger leur mise en route) : ${(data.machines ?? []).join(", ") || "—"}.
 Compétences à évaluer : ${(data.competences ?? []).join(", ") || "—"}.
 
+CONTRAINTES STRICTES :
+- UNE SEULE pièce ou tâche simple (forme géométrique facile : cube, cylindre, plaque percée, etc.) OU un exercice papier/diagnostic.
+- PAS de programmation G-code, Siemens, Fanuc, ni de réglage zéro machine, ni de mise en route machine.
+- Matériel limité au strict minimum (ex : pied à coulisse, palmer/micromètre, règle, crayon, feuille, éventuellement une pièce déjà préparée à mesurer/contrôler ou à monter/démonter).
+- PAS d'EPI complexes (pas de demande de chaussures de sécurité, casque, lunettes spécifiques) — le candidat est en tenue normale, le test reste sûr.
+- Durée courte : 15 à 30 minutes maximum.
+- Doit pouvoir être donné sur une simple feuille imprimée.
+
 Le test doit comporter :
-- une consigne claire (ce que le candidat doit produire/régler/diagnostiquer)
-- la durée estimée
-- le matériel nécessaire
-- les étapes attendues
-- les critères d'évaluation chiffrés (4 à 6 critères, chacun noté sur 5)
-- les pièges/points de sécurité à observer.`;
+- une consigne claire et courte (ce que le candidat doit faire : mesurer, contrôler, identifier, calculer, dessiner, monter…)
+- la durée estimée (15 à 30 min)
+- le matériel minimal (3 éléments max)
+- les étapes attendues (4 à 6 étapes simples)
+- 4 critères d'évaluation chiffrés (chacun noté sur 5)
+- 1 ou 2 points de sécurité simples (bon sens atelier, pas d'EPI lourds).`;
 
     const j = await callAI({
       model: "google/gemini-2.5-flash",
