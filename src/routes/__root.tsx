@@ -1,4 +1,7 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
+import { Toaster } from "@/components/ui/sonner";
 
 import appCss from "../styles.css?url";
 
@@ -29,8 +32,8 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "CIRTA Recruitment Assistant" },
+      { name: "description", content: "Plateforme intelligente d'aide au recrutement industriel — CIRTA AUTOMOTIVE" },
       { name: "author", content: "Lovable" },
       { property: "og:title", content: "Lovable App" },
       { property: "og:description", content: "Lovable Generated Project" },
@@ -65,5 +68,26 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
-  return <Outlet />;
+  return (
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full bg-background">
+        <AppSidebar />
+        <div className="flex flex-1 flex-col">
+          <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-card/80 px-4 backdrop-blur">
+            <SidebarTrigger />
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-semibold text-foreground">CIRTA Recruitment Assistant</span>
+              <span className="hidden text-xs text-muted-foreground sm:inline">
+                — Plateforme d'aide au recrutement industriel
+              </span>
+            </div>
+          </header>
+          <main className="flex-1 p-6">
+            <Outlet />
+          </main>
+        </div>
+      </div>
+      <Toaster />
+    </SidebarProvider>
+  );
 }
