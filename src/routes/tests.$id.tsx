@@ -109,7 +109,7 @@ function TestPage() {
               <div>
                 <b>Critères d'évaluation :</b>
                 <table className="mt-2 w-full border-collapse text-xs">
-                  <thead><tr className="border-b border-border"><th className="p-2 text-left">Critère</th><th className="p-2 text-right">Note (/{`bareme`})</th></tr></thead>
+                  <thead><tr className="border-b border-border"><th className="p-2 text-left">Critère</th><th className="p-2 text-right">Note</th></tr></thead>
                   <tbody>{data.test.criteres.map((c) => <tr key={c.id} className="border-b border-border"><td className="p-2">{c.label}</td><td className="p-2 text-right">__ / {c.bareme}</td></tr>)}</tbody>
                 </table>
               </div>
