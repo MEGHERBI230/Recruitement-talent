@@ -59,6 +59,7 @@ function Stat({
 }
 
 function Dashboard() {
+  const CANDIDATS = useCirta((s) => s.candidats);
   const totalPostes = POSTES.reduce((s, p) => s + p.quantite, 0);
   const urgents = POSTES.filter((p) => p.priorite === "urgent");
   const cvRecus = CANDIDATS.length;
@@ -66,7 +67,7 @@ function Dashboard() {
   const rejetes = CANDIDATS.filter((c) => c.statut === "rejete").length;
   const entretiens = CANDIDATS.filter((c) => c.statut === "entretien").length;
   const acceptes = CANDIDATS.filter((c) => c.statut === "accepte").length;
-  const scoreMoyen = Math.round(CANDIDATS.reduce((s, c) => s + c.score, 0) / CANDIDATS.length);
+  const scoreMoyen = CANDIDATS.length ? Math.round(CANDIDATS.reduce((s, c) => s + c.score, 0) / CANDIDATS.length) : 0;
 
   const bus: BU[] = ["BU1", "BU2", "BU3", "BU4", "TRANSV"];
 
