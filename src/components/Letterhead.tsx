@@ -1,6 +1,9 @@
 import logo from "@/assets/cirta-letterhead-logo.jpg";
+import { useCirta } from "@/store/useCirta";
 
 export function Letterhead({ title, subtitle }: { title: string; subtitle?: string }) {
+  const user = useCirta((s) => s.user);
+  const contact = [user.email, user.telephone].filter(Boolean).join(" — ");
   return (
     <div className="print-letterhead hidden print:block">
       <div className="flex items-center justify-between border-b-2 border-black pb-2">
@@ -17,7 +20,8 @@ export function Letterhead({ title, subtitle }: { title: string; subtitle?: stri
         <div className="text-lg font-bold uppercase">{title}</div>
         {subtitle && <div className="text-sm">{subtitle}</div>}
         <div className="mt-1 text-xs italic">
-          Document établi par <span className="font-bold not-italic">M. MEGHERBI Nabil</span> — Directeur des Opérations, CIRTA AUTOMOTIVE
+          Document établi par <span className="font-bold not-italic">M. {user.nom}</span> — {user.fonction}, CIRTA AUTOMOTIVE
+          {contact && <span className="not-italic"> — {contact}</span>}
         </div>
       </div>
     </div>
@@ -25,10 +29,12 @@ export function Letterhead({ title, subtitle }: { title: string; subtitle?: stri
 }
 
 export function LetterheadFooter() {
+  const user = useCirta((s) => s.user);
+  const contact = [user.email, user.telephone].filter(Boolean).join(" — ");
   return (
     <div className="print-footer hidden print:block">
       <div className="mt-4 border-t border-black pt-2 text-center text-xs">
-        <div>Application interne développée et utilisée par M. MEGHERBI Nabil — Directeur des Opérations</div>
+        <div>Application interne — M. {user.nom}, {user.fonction}{contact && ` — ${contact}`}</div>
         <div>Contactez-nous : contact@cirtaautomautive-dz.com — +213 555 00 12 40 — www.cirtaautomotive-dz.com</div>
       </div>
     </div>
