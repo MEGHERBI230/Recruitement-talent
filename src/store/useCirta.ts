@@ -43,6 +43,8 @@ export interface ComportementData {
   scoreGlobal?: number;
 }
 
+export type CandidatTag = "urgent" | "a_former" | "bon_profil" | "rejete_def" | "fort_potentiel" | "a_revoir";
+
 export interface CandidatExt extends Candidat {
   competences?: string[];
   machinesMaitrisees?: string[];
@@ -50,6 +52,8 @@ export interface CandidatExt extends Candidat {
   email?: string;
   ville?: string;
   notes?: string;
+  tags?: CandidatTag[];
+  historique?: { date: string; event: string }[];
 }
 
 export interface UserProfile {
