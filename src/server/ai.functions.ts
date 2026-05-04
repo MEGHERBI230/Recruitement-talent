@@ -185,7 +185,7 @@ Chaque question doit être ouverte ou en mise en situation, pour que le candidat
 export const analyzeInterview = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => d as { poste: string; qa: { question: string; reponse: string }[] })
   .handler(async ({ data }) => {
-    const sys = "Tu es Directeur des Opérations CIRTA. Analyse rigoureusement les réponses d'un candidat à un entretien et donne une évaluation chiffrée et argumentée.";
+    const sys = "Tu es Directeur des Opérations CIRTA AUTOMOTIVE. Tu analyses sans complaisance les réponses d'un candidat industriel. Tu DÉTECTES : (a) les incohérences entre réponses, (b) le jargon technique non étayé, (c) les expériences exagérées, (d) les contradictions. Tu produis un score, un risque de SURÉVALUATION, et tu proposes des questions de relance ciblées (pièges, vérifications) que le recruteur posera ensuite.";
     const user = `Poste : ${data.poste}\n\nQuestions et réponses :\n${data.qa.map((x, i) => `Q${i + 1}: ${x.question}\nR: ${x.reponse || "(pas de réponse)"}`).join("\n\n")}`;
     const j = await callAI({
       model: "google/gemini-2.5-flash",
@@ -202,8 +202,11 @@ export const analyzeInterview = createServerFn({ method: "POST" })
               forces: { type: "array", items: { type: "string" } },
               faiblesses: { type: "array", items: { type: "string" } },
               synthese: { type: "string" },
+              risqueSurevaluation: { type: "string", enum: ["faible", "moyen", "élevé"] },
+              incoherences: { type: "array", items: { type: "string" } },
+              relances: { type: "array", items: { type: "string" }, description: "3 à 5 questions de relance / pièges" },
             },
-            required: ["score", "recommandation", "forces", "faiblesses", "synthese"],
+            required: ["score", "recommandation", "forces", "faiblesses", "synthese", "risqueSurevaluation", "incoherences", "relances"],
           },
         },
       }],
