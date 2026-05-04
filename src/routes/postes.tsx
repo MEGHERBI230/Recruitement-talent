@@ -30,11 +30,13 @@ export const Route = createFileRoute("/postes")({ component: PostesPage });
 interface FormState {
   intitule: string; bu: BU; quantite: number; priorite: Priority;
   experienceMin: number; diplome: string; competences: string; machines: string[];
+  hardSkills: string; softSkills: string;
 }
 
 const EMPTY: FormState = {
   intitule: "", bu: "BU1", quantite: 1, priorite: "prioritaire",
   experienceMin: 1, diplome: "TS", competences: "", machines: [],
+  hardSkills: "", softSkills: "",
 };
 
 function PostesPage() {
@@ -66,6 +68,8 @@ function PostesPage() {
       intitule: p.intitule, bu: p.bu, quantite: p.quantite, priorite: p.priorite,
       experienceMin: p.experienceMin, diplome: p.diplome,
       competences: p.competences.join(", "), machines: [...p.machines],
+      hardSkills: (p.hardSkills ?? []).join(", "),
+      softSkills: (p.softSkills ?? []).join(", "),
     });
     setOpen(true);
   };
@@ -74,11 +78,18 @@ function PostesPage() {
     if (!form.intitule.trim()) { toast.error("L'intitulé est requis"); return; }
     const competences = form.competences.split(",").map((s) => s.trim()).filter(Boolean);
     const machines = form.machines.filter(Boolean);
+    const hardSkills = form.hardSkills.split(",").map((s) => s.trim()).filter(Boolean);
+    const softSkills = form.softSkills.split(",").map((s) => s.trim()).filter(Boolean);
+    const payload = {
+      intitule: form.intitule, bu: form.bu, quantite: form.quantite, priorite: form.priorite,
+      experienceMin: form.experienceMin, diplome: form.diplome,
+      competences, machines, hardSkills, softSkills,
+    };
     if (editId) {
-      updatePoste(editId, { ...form, competences, machines });
+      updatePoste(editId, payload);
       toast.success("Poste modifié");
     } else {
-      addPoste({ id: `p${Date.now()}`, ...form, competences, machines });
+      addPoste({ id: `p${Date.now()}`, ...payload });
       toast.success("Poste ajouté");
     }
     setOpen(false);
@@ -167,7 +178,7 @@ function PostesPage() {
       </Card>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>{editId ? "Modifier le poste" : "Nouveau poste"}</DialogTitle></DialogHeader>
           <div className="grid grid-cols-2 gap-3">
             <div className="col-span-2"><Label>Intitulé du poste *</Label><Input value={form.intitule} onChange={(e) => setForm({ ...form, intitule: e.target.value })} /></div>
@@ -188,15 +199,55 @@ function PostesPage() {
             <div><Label>Quantité à pourvoir</Label><Input type="number" min={1} value={form.quantite} onChange={(e) => setForm({ ...form, quantite: +e.target.value || 1 })} /></div>
             <div><Label>Expérience minimale (ans)</Label><Input type="number" min={0} value={form.experienceMin} onChange={(e) => setForm({ ...form, experienceMin: +e.target.value || 0 })} /></div>
             <div className="col-span-2">
-              <Label>Diplôme requis</Label>
-              <Select value={form.diplome} onValueChange={(v) => setForm({ ...form, diplome: v })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {["CAP", "BEP", "CAP/BEP", "TS", "TS / Ingénieur", "Ingénieur", "Ingénieur chimiste"].map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}
-                </SelectContent>
-              </Select>
+              <Label>Diplôme requis (libre — adapté au métier)</Label>
+              <Input
+                value={form.diplome}
+                onChange={(e) => setForm({ ...form, diplome: e.target.value })}
+                placeholder="Ex : Ingénieur d'État en Génie Mécanique / TS Productique / CAP Soudage qualifié"
+                list="diplomes-suggestions"
+              />
+              <datalist id="diplomes-suggestions">
+                {[
+                  "CAP/BEP Soudage qualifié (idéalement certif. ISO 9606)",
+                  "CAP Conduite de machines / niveau 3ème AS",
+                  "CAP/BEP Mécanique générale (tourneur qualifié)",
+                  "CAP/BEP Mécanique générale (fraiseur qualifié)",
+                  "CAP/BEP Mécanique ou conduite presse",
+                  "TS Mécanique / Productique",
+                  "TS Mécanique / CFAO / Productique",
+                  "TS Chaudronnerie / Construction Métallique",
+                  "TS Robotique / Maintenance Industrielle",
+                  "TS Plasturgie / Chimie industrielle",
+                  "TS Plasturgie / Procédés Plastiques",
+                  "TS Métallurgie / Fonderie",
+                  "TS Métrologie / Mécanique de précision",
+                  "TS Conception Mécanique / Dessin Industriel",
+                  "TS Automatisme / Électromécanique / Maintenance Industrielle",
+                  "Ingénieur d'État en Génie Mécanique / Productique",
+                  "Ingénieur d'État en Conception Mécanique / Génie Mécanique",
+                  "Ingénieur Mécanique / Construction Métallique",
+                  "Ingénieur Métallurgie / Fonderie / Mécanique",
+                  "Ingénieur Chimiste (option polymères / matériaux)",
+                  "Ingénieur Chimie des Polymères / Génie des Procédés",
+                  "Ingénieur Qualité / Management Industriel",
+                  "Ingénieur Maintenance Industrielle / Électromécanique",
+                  "Ingénieur HSE / Sécurité Industrielle / Environnement",
+                  "Ingénieur en Génie Industriel / Logistique",
+                  "Ingénieur d'État en Génie Industriel / Mécanique / Production",
+                ].map((d) => <option key={d} value={d} />)}
+              </datalist>
             </div>
             <div className="col-span-2"><Label>Compétences clés (séparées par virgules)</Label><Textarea rows={2} value={form.competences} onChange={(e) => setForm({ ...form, competences: e.target.value })} /></div>
+            <div className="col-span-2">
+              <Label>Hard skills — savoir-faire technique (virgules)</Label>
+              <Textarea rows={3} value={form.hardSkills} onChange={(e) => setForm({ ...form, hardSkills: e.target.value })}
+                placeholder="Ex : Codes G Fanuc & Siemens, Lecture palmer, Conduite centre 5 axes" />
+            </div>
+            <div className="col-span-2">
+              <Label>Soft skills — savoir-être (virgules)</Label>
+              <Textarea rows={2} value={form.softSkills} onChange={(e) => setForm({ ...form, softSkills: e.target.value })}
+                placeholder="Ex : Précision, Autonomie, Discipline sécurité, Esprit d'équipe" />
+            </div>
             <div className="col-span-2">
               <Label>Machines liées</Label>
               <div className="space-y-2">
