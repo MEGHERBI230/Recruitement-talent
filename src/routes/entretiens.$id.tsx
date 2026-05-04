@@ -140,15 +140,34 @@ function EntretienPage() {
             <Card className="mt-4">
               <CardHeader><CardTitle className="text-base">Évaluation IA</CardTitle></CardHeader>
               <CardContent className="space-y-3 text-sm">
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                   <div className="text-3xl font-bold">{data.analyse.score}/100</div>
                   <Badge variant="outline" className={recoCls(data.analyse.recommandation)}>{data.analyse.recommandation}</Badge>
+                  {data.analyse.risqueSurevaluation && (
+                    <Badge variant="outline" className={
+                      data.analyse.risqueSurevaluation === "élevé" ? "bg-destructive/10 text-destructive border-destructive/30"
+                      : data.analyse.risqueSurevaluation === "moyen" ? "bg-warning/15 text-warning border-warning/30"
+                      : "bg-success/15 text-success border-success/30"
+                    }>⚠️ Risque surévaluation : {data.analyse.risqueSurevaluation}</Badge>
+                  )}
                 </div>
                 <p>{data.analyse.synthese}</p>
                 <div className="grid grid-cols-2 gap-3">
                   <div><div className="text-xs font-bold uppercase text-success">Forces</div>{data.analyse.forces.map((f, i) => <div key={i}>✓ {f}</div>)}</div>
                   <div><div className="text-xs font-bold uppercase text-destructive">Faiblesses</div>{data.analyse.faiblesses.map((f, i) => <div key={i}>✗ {f}</div>)}</div>
                 </div>
+                {data.analyse.incoherences && data.analyse.incoherences.length > 0 && (
+                  <div className="rounded border border-warning/30 bg-warning/10 p-3">
+                    <div className="text-xs font-bold uppercase text-warning">Incohérences détectées</div>
+                    <ul className="list-inside list-disc">{data.analyse.incoherences.map((x, i) => <li key={i}>{x}</li>)}</ul>
+                  </div>
+                )}
+                {data.analyse.relances && data.analyse.relances.length > 0 && (
+                  <div className="rounded border border-info/30 bg-info/10 p-3">
+                    <div className="text-xs font-bold uppercase text-info">Questions de relance / pièges à poser</div>
+                    <ol className="list-inside list-decimal">{data.analyse.relances.map((x, i) => <li key={i}>{x}</li>)}</ol>
+                  </div>
+                )}
                 <div className="flex justify-end no-print">
                   <Button size="sm" onClick={() => navigate({ to: "/candidats/$id", params: { id } })}>Retour fiche candidat</Button>
                 </div>
