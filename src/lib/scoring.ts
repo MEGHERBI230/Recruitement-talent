@@ -32,7 +32,16 @@ function rank(d: string) {
   return 1.5;
 }
 
-export function scoreCandidat(c: { experience: number; diplome: string; competences?: string[]; machinesMaitrisees?: string[]; posteVise: string }): ScoreBreakdown {
+export interface ScoreWeightsInput { competences?: number; experience?: number; diplome?: number; machines?: number }
+
+export function scoreCandidat(c: { experience: number; diplome: string; competences?: string[]; machinesMaitrisees?: string[]; posteVise: string }, weights?: ScoreWeightsInput): ScoreBreakdown {
+  const W = {
+    competences: weights?.competences ?? 40,
+    experience: weights?.experience ?? 25,
+    diplome: weights?.diplome ?? 15,
+    machines: weights?.machines ?? 20,
+  };
+  const TOTAL = W.competences + W.experience + W.diplome + W.machines || 100;
   const poste = POSTES.find((p) => p.intitule === c.posteVise);
   const forces: string[] = [];
   const faiblesses: string[] = [];
