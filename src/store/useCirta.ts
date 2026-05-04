@@ -52,6 +52,13 @@ export interface CandidatExt extends Candidat {
   notes?: string;
 }
 
+export interface UserProfile {
+  nom: string;
+  fonction: string;
+  email: string;
+  telephone: string;
+}
+
 interface State {
   candidats: CandidatExt[];
   postes: Poste[];
@@ -59,6 +66,7 @@ interface State {
   entretiens: Record<string, EntretienData>;
   tests: Record<string, TestData>;
   comportements: Record<string, ComportementData>;
+  user: UserProfile;
   setStatut: (id: string, s: CandidatStatut) => void;
   setScore: (id: string, score: number) => void;
   updateCandidat: (id: string, patch: Partial<CandidatExt>) => void;
@@ -72,8 +80,16 @@ interface State {
   saveEntretien: (d: EntretienData) => void;
   saveTest: (d: TestData) => void;
   saveComportement: (d: ComportementData) => void;
+  updateUser: (patch: Partial<UserProfile>) => void;
   reset: () => void;
 }
+
+const defaultUser: UserProfile = {
+  nom: "MEGHERBI Nabil",
+  fonction: "Directeur des Opérations",
+  email: "",
+  telephone: "",
+};
 
 const seedExt: CandidatExt[] = CANDIDATS.map((c) => ({
   ...c,
