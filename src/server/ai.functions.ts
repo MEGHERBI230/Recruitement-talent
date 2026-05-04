@@ -185,7 +185,7 @@ Chaque question doit être ouverte ou en mise en situation, pour que le candidat
 export const analyzeInterview = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => d as { poste: string; qa: { question: string; reponse: string }[] })
   .handler(async ({ data }) => {
-    const sys = "Tu es Directeur des Opérations CIRTA. Analyse rigoureusement les réponses d'un candidat à un entretien et donne une évaluation chiffrée et argumentée.";
+    const sys = "Tu es Directeur des Opérations CIRTA AUTOMOTIVE. Tu analyses sans complaisance les réponses d'un candidat industriel. Tu DÉTECTES : (a) les incohérences entre réponses, (b) le jargon technique non étayé, (c) les expériences exagérées, (d) les contradictions. Tu produis un score, un risque de SURÉVALUATION, et tu proposes des questions de relance ciblées (pièges, vérifications) que le recruteur posera ensuite.";
     const user = `Poste : ${data.poste}\n\nQuestions et réponses :\n${data.qa.map((x, i) => `Q${i + 1}: ${x.question}\nR: ${x.reponse || "(pas de réponse)"}`).join("\n\n")}`;
     const j = await callAI({
       model: "google/gemini-2.5-flash",
@@ -202,8 +202,11 @@ export const analyzeInterview = createServerFn({ method: "POST" })
               forces: { type: "array", items: { type: "string" } },
               faiblesses: { type: "array", items: { type: "string" } },
               synthese: { type: "string" },
+              risqueSurevaluation: { type: "string", enum: ["faible", "moyen", "élevé"] },
+              incoherences: { type: "array", items: { type: "string" } },
+              relances: { type: "array", items: { type: "string" }, description: "3 à 5 questions de relance / pièges" },
             },
-            required: ["score", "recommandation", "forces", "faiblesses", "synthese"],
+            required: ["score", "recommandation", "forces", "faiblesses", "synthese", "risqueSurevaluation", "incoherences", "relances"],
           },
         },
       }],
@@ -289,6 +292,71 @@ export const analyzeBehavior = createServerFn({ method: "POST" })
         },
       }],
       tool_choice: { type: "function", function: { name: "evaluate_behavior" } },
+    });
+    return extractToolArgs(j);
+  });
+
+// ========== PLAN REDÉMARRAGE BU ==========
+export const planRestart = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => d as {
+    bu: string;
+    buLabel: string;
+    postes: { intitule: string; quantite: number; priorite: string; experienceMin: number; competences: string[]; machines: string[] }[];
+    machinesEtat: { nom: string; etat: string; criticite: string }[];
+    candidatsDisponibles: { posteVise: string; score: number; statut: string }[];
+    objectif?: string;
+  })
+  .handler(async ({ data }) => {
+    const sys = "Tu es Directeur Industriel expérimenté. Tu produis un plan de redémarrage opérationnel pragmatique d'une Business Unit automobile. Tu hiérarchises les recrutements, identifies les postes critiques, et signales les risques industriels concrets.";
+    const user = `BU à redémarrer : ${data.buLabel}
+Objectif utilisateur : ${data.objectif || "redémarrage standard"}
+
+POSTES OUVERTS :
+${data.postes.map((p) => `- ${p.intitule} (×${p.quantite}, ${p.priorite}, exp ${p.experienceMin}a) — machines: ${p.machines.join(", ") || "—"}`).join("\n")}
+
+PARC MACHINES :
+${data.machinesEtat.map((m) => `- ${m.nom} [${m.criticite}] : ${m.etat}`).join("\n")}
+
+CANDIDATS DÉJÀ EN PIPELINE :
+${data.candidatsDisponibles.map((c) => `- ${c.posteVise} | score ${c.score}% | ${c.statut}`).join("\n") || "(aucun)"}
+
+Produis un plan de redémarrage : ordre de recrutement, postes critiques, risques, jalons.`;
+
+    const j = await callAI({
+      model: "google/gemini-2.5-flash",
+      messages: [{ role: "system", content: sys }, { role: "user", content: user }],
+      tools: [{
+        type: "function",
+        function: {
+          name: "restart_plan",
+          parameters: {
+            type: "object",
+            properties: {
+              readiness: { type: "number", description: "0 à 100, niveau de préparation actuel" },
+              niveauRisque: { type: "string", enum: ["faible", "moyen", "élevé", "critique"] },
+              postesCritiques: { type: "array", items: { type: "string" } },
+              ordreRecrutement: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    poste: { type: "string" },
+                    priorite: { type: "number", description: "1 = à recruter en premier" },
+                    justification: { type: "string" },
+                    delaiCible: { type: "string", description: "ex: '2 semaines'" },
+                  },
+                  required: ["poste", "priorite", "justification", "delaiCible"],
+                },
+              },
+              risques: { type: "array", items: { type: "string" } },
+              jalons: { type: "array", items: { type: "string" }, description: "étapes clés du redémarrage" },
+              synthese: { type: "string" },
+            },
+            required: ["readiness", "niveauRisque", "postesCritiques", "ordreRecrutement", "risques", "jalons", "synthese"],
+          },
+        },
+      }],
+      tool_choice: { type: "function", function: { name: "restart_plan" } },
     });
     return extractToolArgs(j);
   });

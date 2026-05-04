@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -10,9 +10,12 @@ import {
   Users,
   TrendingUp,
   AlertTriangle,
+  Factory,
 } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
-import { POSTES, MACHINES, CANDIDATS, BU_LABELS, BU, PRIORITY_LABELS } from "@/data/cirta";
+import { POSTES, MACHINES, BU_LABELS, BU, PRIORITY_LABELS } from "@/data/cirta";
+import { useCirta } from "@/store/useCirta";
+import { buReadiness } from "@/lib/scoring";
 
 export const Route = createFileRoute("/")({
   component: Dashboard,
@@ -56,6 +59,7 @@ function Stat({
 }
 
 function Dashboard() {
+  const CANDIDATS = useCirta((s) => s.candidats);
   const totalPostes = POSTES.reduce((s, p) => s + p.quantite, 0);
   const urgents = POSTES.filter((p) => p.priorite === "urgent");
   const cvRecus = CANDIDATS.length;
@@ -63,7 +67,7 @@ function Dashboard() {
   const rejetes = CANDIDATS.filter((c) => c.statut === "rejete").length;
   const entretiens = CANDIDATS.filter((c) => c.statut === "entretien").length;
   const acceptes = CANDIDATS.filter((c) => c.statut === "accepte").length;
-  const scoreMoyen = Math.round(CANDIDATS.reduce((s, c) => s + c.score, 0) / CANDIDATS.length);
+  const scoreMoyen = CANDIDATS.length ? Math.round(CANDIDATS.reduce((s, c) => s + c.score, 0) / CANDIDATS.length) : 0;
 
   const bus: BU[] = ["BU1", "BU2", "BU3", "BU4", "TRANSV"];
 
@@ -112,26 +116,27 @@ function Dashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Couverture par Business Unit</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-base"><Factory className="h-4 w-4" /> Readiness par Business Unit</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {bus.map((bu) => {
-              const buPostes = POSTES.filter((p) => p.bu === bu);
-              const total = buPostes.reduce((s, p) => s + p.quantite, 0);
-              const cands = CANDIDATS.filter((c) => c.bu === bu).length;
-              const pct = total ? Math.min(100, Math.round((cands / total) * 100)) : 0;
+              const r = buReadiness(bu, CANDIDATS);
+              const cls =
+                r.niveau === "PRÊTE" ? "text-success"
+                : r.niveau === "DÉMARRABLE" ? "text-info"
+                : r.niveau === "À RISQUE" ? "text-warning"
+                : "text-destructive";
               return (
-                <div key={bu}>
+                <Link key={bu} to="/redemarrage" className="block hover:opacity-80">
                   <div className="mb-1 flex items-center justify-between text-xs">
                     <span className="font-medium text-foreground">{BU_LABELS[bu]}</span>
-                    <span className="text-muted-foreground">
-                      {cands}/{total} candidats
-                    </span>
+                    <span className={`font-bold ${cls}`}>{r.readiness}% — {r.niveau}</span>
                   </div>
-                  <Progress value={pct} className="h-2" />
-                </div>
+                  <Progress value={r.readiness} className="h-2" />
+                </Link>
               );
             })}
+            <p className="pt-2 text-[10px] text-muted-foreground">Cliquer sur une BU pour générer un plan de redémarrage IA.</p>
           </CardContent>
         </Card>
 
