@@ -15,7 +15,7 @@ export const Route = createFileRoute("/candidats/$id")({ component: FicheCandida
 
 function FicheCandidat() {
   const { id } = Route.useParams();
-  const navigate = useNavigate();
+  
   const candidat = useCirta((s) => s.candidats.find((c) => c.id === id));
   const setStatut = useCirta((s) => s.setStatut);
   const setScore = useCirta((s) => s.setScore);

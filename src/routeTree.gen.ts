@@ -70,29 +70,29 @@ const CandidatsIndexRoute = CandidatsIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const TestsIdRoute = TestsIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => TestsRoute,
+  id: '/tests/$id',
+  path: '/tests/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const RapportsIdRoute = RapportsIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => RapportsRoute,
+  id: '/rapports/$id',
+  path: '/rapports/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const EntretiensIdRoute = EntretiensIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => EntretiensRoute,
+  id: '/entretiens/$id',
+  path: '/entretiens/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ComportementIdRoute = ComportementIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => ComportementRoute,
+  id: '/comportement/$id',
+  path: '/comportement/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const CandidatsIdRoute = CandidatsIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => CandidatsRoute,
+  id: '/candidats/$id',
+  path: '/candidats/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -200,6 +200,11 @@ export interface RootRouteChildren {
   MachinesRoute: typeof MachinesRoute
   ParametresRoute: typeof ParametresRoute
   PostesRoute: typeof PostesRoute
+  CandidatsIdRoute: typeof CandidatsIdRoute
+  ComportementIdRoute: typeof ComportementIdRoute
+  EntretiensIdRoute: typeof EntretiensIdRoute
+  RapportsIdRoute: typeof RapportsIdRoute
+  TestsIdRoute: typeof TestsIdRoute
   CandidatsIndexRoute: typeof CandidatsIndexRoute
   ComportementIndexRoute: typeof ComportementIndexRoute
   EntretiensIndexRoute: typeof EntretiensIndexRoute
@@ -274,38 +279,38 @@ declare module '@tanstack/react-router' {
     }
     '/tests/$id': {
       id: '/tests/$id'
-      path: '/$id'
+      path: '/tests/$id'
       fullPath: '/tests/$id'
       preLoaderRoute: typeof TestsIdRouteImport
-      parentRoute: typeof TestsRoute
+      parentRoute: typeof rootRouteImport
     }
     '/rapports/$id': {
       id: '/rapports/$id'
-      path: '/$id'
+      path: '/rapports/$id'
       fullPath: '/rapports/$id'
       preLoaderRoute: typeof RapportsIdRouteImport
-      parentRoute: typeof RapportsRoute
+      parentRoute: typeof rootRouteImport
     }
     '/entretiens/$id': {
       id: '/entretiens/$id'
-      path: '/$id'
+      path: '/entretiens/$id'
       fullPath: '/entretiens/$id'
       preLoaderRoute: typeof EntretiensIdRouteImport
-      parentRoute: typeof EntretiensRoute
+      parentRoute: typeof rootRouteImport
     }
     '/comportement/$id': {
       id: '/comportement/$id'
-      path: '/$id'
+      path: '/comportement/$id'
       fullPath: '/comportement/$id'
       preLoaderRoute: typeof ComportementIdRouteImport
-      parentRoute: typeof ComportementRoute
+      parentRoute: typeof rootRouteImport
     }
     '/candidats/$id': {
       id: '/candidats/$id'
-      path: '/$id'
+      path: '/candidats/$id'
       fullPath: '/candidats/$id'
       preLoaderRoute: typeof CandidatsIdRouteImport
-      parentRoute: typeof CandidatsRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -315,6 +320,11 @@ const rootRouteChildren: RootRouteChildren = {
   MachinesRoute: MachinesRoute,
   ParametresRoute: ParametresRoute,
   PostesRoute: PostesRoute,
+  CandidatsIdRoute: CandidatsIdRoute,
+  ComportementIdRoute: ComportementIdRoute,
+  EntretiensIdRoute: EntretiensIdRoute,
+  RapportsIdRoute: RapportsIdRoute,
+  TestsIdRoute: TestsIdRoute,
   CandidatsIndexRoute: CandidatsIndexRoute,
   ComportementIndexRoute: ComportementIndexRoute,
   EntretiensIndexRoute: EntretiensIndexRoute,
@@ -324,12 +334,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
