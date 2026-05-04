@@ -93,6 +93,6 @@ export const useCirta = create<State>()(
       saveComportement: (d) => set((st) => ({ comportements: { ...st.comportements, [d.candidatId]: d } })),
       reset: () => set({ candidats: seedExt, postes: POSTES, machines: MACHINES as MachineExt[], entretiens: {}, tests: {}, comportements: {} }),
     }),
-    { name: "cirta-store-v1" },
+    { name: "cirta-store-v2" },
   ),
 );
