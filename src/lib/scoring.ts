@@ -89,7 +89,52 @@ export function scoreCandidat(c: { experience: number; diplome: string; competen
   else if (total >= 55) recommandation = "MOYEN";
   else if (total >= 40) recommandation = "FAIBLE";
 
-  return { total, competences: compScore, experience: expScore, diplome: dipScore, machines: machScore, recommandation, forces, faiblesses, posteId: poste?.id };
+  const reqMach = poste?.machines ?? [];
+  const haveMach = c.machinesMaitrisees ?? [];
+  const matched = reqMach.filter((r) =>
+    haveMach.some((h) => h.toLowerCase().includes(r.split(" ")[0].toLowerCase()) || r.toLowerCase().includes(h.toLowerCase())),
+  );
+  const technique = Math.round((compScore / 40) * 60 + (machScore / 20) * 40);
+  const terrain = Math.min(100, Math.round((c.experience / Math.max(1, poste?.experienceMin ?? 5)) * 80));
+  const autonomie = Math.min(100, Math.round(c.experience * 8 + rank(c.diplome) * 10));
+  const comportement = 60;
+  const readinessAtelier = reqMach.length ? Math.round((matched.length / reqMach.length) * 100) : 80;
+
+  let risque: RisqueNiveau = "faible";
+  const expRatio = poste ? c.experience / Math.max(1, poste.experienceMin) : 1;
+  if (expRatio < 0.5 || readinessAtelier < 30 || total < 50) risque = "élevé";
+  else if (expRatio < 0.8 || readinessAtelier < 60 || total < 70) risque = "moyen";
+
+  return {
+    total, competences: compScore, experience: expScore, diplome: dipScore, machines: machScore,
+    technique, terrain, autonomie, comportement, risque,
+    recommandation, forces, faiblesses, posteId: poste?.id,
+    matchMachines: { req: reqMach, have: haveMach, matched },
+    readinessAtelier,
+  };
+}
+
+export function risqueCls(r: RisqueNiveau) {
+  if (r === "faible") return "bg-success/15 text-success border-success/30";
+  if (r === "moyen") return "bg-warning/15 text-warning border-warning/30";
+  return "bg-destructive/10 text-destructive border-destructive/30";
+}
+
+export function buReadiness(bu: string, candidats: { bu: string; statut: string; score: number }[]) {
+  const buPostes = POSTES.filter((p) => p.bu === bu);
+  const totalRequis = buPostes.reduce((s, p) => s + p.quantite, 0);
+  const buMachines = MACHINES.filter((m) => m.bu === bu);
+  const ops = buMachines.filter((m) => m.etat === "opérationnel").length;
+  const machReady = buMachines.length ? ops / buMachines.length : 1;
+  const acceptes = candidats.filter((c) => c.bu === bu && (c.statut === "accepte" || c.statut === "preselectionne")).length;
+  const rhReady = totalRequis ? Math.min(1, acceptes / totalRequis) : 0;
+  const readiness = Math.round((rhReady * 0.7 + machReady * 0.3) * 100);
+  let niveau: "CRITIQUE" | "À RISQUE" | "DÉMARRABLE" | "PRÊTE";
+  if (readiness < 30) niveau = "CRITIQUE";
+  else if (readiness < 55) niveau = "À RISQUE";
+  else if (readiness < 80) niveau = "DÉMARRABLE";
+  else niveau = "PRÊTE";
+  return { readiness, niveau, totalRequis, acceptes, machReady: Math.round(machReady * 100), buPostes };
 }
 
 export function recoCls(r: ScoreBreakdown["recommandation"]) {
