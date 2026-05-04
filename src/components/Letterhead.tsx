@@ -10,7 +10,7 @@ export function Letterhead({ title, subtitle }: { title: string; subtitle?: stri
         <img src={logo} alt="CIRTA AUTOMOTIVE" className="h-16" />
         <div className="text-center text-xs leading-tight">
           <div className="font-bold">Sarl CIRTA AUTOMOTIVE</div>
-          <div>Zone Industrielle Ben Badis ELKhroub Constantine</div>
+          <div>Sarl CIRTA AUTOMOTIVE — Constantine, Algérie</div>
           <div>RC : 25/00-0063004B99 — AI : 25033038021</div>
           <div>NIF : 09992500630441 — NIS : 099925031171915</div>
         </div>

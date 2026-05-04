@@ -10,6 +10,7 @@ import {
   FileBarChart,
   Settings,
   Factory,
+  ShieldCheck,
 } from "lucide-react";
 import {
   Sidebar,
@@ -21,7 +22,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarFooter,
 } from "@/components/ui/sidebar";
 import logo from "@/assets/logo-cirta.png";
 
@@ -33,6 +33,7 @@ const items = [
   { title: "Entretiens", url: "/entretiens", icon: Users },
   { title: "Tests pratiques", url: "/tests", icon: ClipboardCheck },
   { title: "Test comportemental", url: "/comportement", icon: FlaskConical },
+  { title: "Évaluations RH", url: "/evaluations", icon: ShieldCheck },
   { title: "Rapports", url: "/rapports", icon: FileBarChart },
   { title: "Redémarrage usine", url: "/redemarrage", icon: Factory },
   { title: "Paramètres", url: "/parametres", icon: Settings },
@@ -73,13 +74,6 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="border-t border-sidebar-border">
-        <div className="px-2 py-2 text-[10px] text-sidebar-foreground/60 group-data-[collapsible=icon]:hidden">
-          Zone Industrielle Ben Badis
-          <br />
-          El Khroub, Constantine
-        </div>
-      </SidebarFooter>
     </Sidebar>
   );
 }

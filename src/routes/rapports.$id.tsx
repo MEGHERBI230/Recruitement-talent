@@ -41,7 +41,7 @@ function RapportCandidat() {
             <img src={logo} alt="CIRTA" className="h-14 w-14" />
             <div>
               <div className="text-lg font-bold">CIRTA AUTOMOTIVE</div>
-              <div className="text-xs text-muted-foreground">Zone Industrielle Ben Badis, El Khroub — Constantine</div>
+              <div className="text-xs text-muted-foreground">Constantine, Algérie</div>
             </div>
           </div>
           <div className="text-right text-xs">

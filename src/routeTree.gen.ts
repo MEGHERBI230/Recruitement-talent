@@ -13,6 +13,7 @@ import { Route as RedemarrageRouteImport } from './routes/redemarrage'
 import { Route as PostesRouteImport } from './routes/postes'
 import { Route as ParametresRouteImport } from './routes/parametres'
 import { Route as MachinesRouteImport } from './routes/machines'
+import { Route as EvaluationsRouteImport } from './routes/evaluations'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TestsIndexRouteImport } from './routes/tests.index'
 import { Route as RapportsIndexRouteImport } from './routes/rapports.index'
@@ -43,6 +44,11 @@ const ParametresRoute = ParametresRouteImport.update({
 const MachinesRoute = MachinesRouteImport.update({
   id: '/machines',
   path: '/machines',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EvaluationsRoute = EvaluationsRouteImport.update({
+  id: '/evaluations',
+  path: '/evaluations',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -103,6 +109,7 @@ const CandidatsIdRoute = CandidatsIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/evaluations': typeof EvaluationsRoute
   '/machines': typeof MachinesRoute
   '/parametres': typeof ParametresRoute
   '/postes': typeof PostesRoute
@@ -120,6 +127,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/evaluations': typeof EvaluationsRoute
   '/machines': typeof MachinesRoute
   '/parametres': typeof ParametresRoute
   '/postes': typeof PostesRoute
@@ -138,6 +146,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/evaluations': typeof EvaluationsRoute
   '/machines': typeof MachinesRoute
   '/parametres': typeof ParametresRoute
   '/postes': typeof PostesRoute
@@ -157,6 +166,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/evaluations'
     | '/machines'
     | '/parametres'
     | '/postes'
@@ -174,6 +184,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/evaluations'
     | '/machines'
     | '/parametres'
     | '/postes'
@@ -191,6 +202,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/evaluations'
     | '/machines'
     | '/parametres'
     | '/postes'
@@ -209,6 +221,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  EvaluationsRoute: typeof EvaluationsRoute
   MachinesRoute: typeof MachinesRoute
   ParametresRoute: typeof ParametresRoute
   PostesRoute: typeof PostesRoute
@@ -253,6 +266,13 @@ declare module '@tanstack/react-router' {
       path: '/machines'
       fullPath: '/machines'
       preLoaderRoute: typeof MachinesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/evaluations': {
+      id: '/evaluations'
+      path: '/evaluations'
+      fullPath: '/evaluations'
+      preLoaderRoute: typeof EvaluationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -337,6 +357,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  EvaluationsRoute: EvaluationsRoute,
   MachinesRoute: MachinesRoute,
   ParametresRoute: ParametresRoute,
   PostesRoute: PostesRoute,

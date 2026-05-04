@@ -74,6 +74,37 @@ export interface UserProfile {
 
 export const DEFAULT_WEIGHTS: ScoreWeights = { competences: 40, experience: 25, diplome: 15, machines: 20 };
 
+export type EvaluationType = "periode_essai" | "renouvellement_cdd" | "cdd_to_cdi";
+
+export interface EvalQuestion { question: string; objectif: string; categorie: string; bareme: number }
+export interface EvalNote { idx: number; note: number; commentaire: string }
+export interface EvalAnalyse {
+  scoreGlobal: number;
+  verdict: "VALIDÉ" | "À CONSOLIDER" | "NON VALIDÉ";
+  forces: string[];
+  axesProgres: string[];
+  decisionRecommandee: string;
+  synthese: string;
+}
+export interface EvaluationData {
+  id: string;
+  candidatId: string;
+  type: EvaluationType;
+  date: string;
+  questions: EvalQuestion[];
+  notes: EvalNote[];
+  observationsTerrain?: string;
+  analyse?: EvalAnalyse;
+}
+
+export const EVAL_LABELS: Record<EvaluationType, string> = {
+  periode_essai: "Validation période d'essai",
+  renouvellement_cdd: "Renouvellement CDD (1 an)",
+  cdd_to_cdi: "Passage CDD → CDI",
+};
+
+interface AuthState { isLoggedIn: boolean; displayName: string }
+
 interface State {
   candidats: CandidatExt[];
   postes: Poste[];
@@ -81,7 +112,9 @@ interface State {
   entretiens: Record<string, EntretienData>;
   tests: Record<string, TestData>;
   comportements: Record<string, ComportementData>;
+  evaluations: EvaluationData[];
   user: UserProfile;
+  auth: AuthState;
   setStatut: (id: string, s: CandidatStatut) => void;
   setScore: (id: string, score: number) => void;
   updateCandidat: (id: string, patch: Partial<CandidatExt>) => void;
@@ -95,7 +128,12 @@ interface State {
   saveEntretien: (d: EntretienData) => void;
   saveTest: (d: TestData) => void;
   saveComportement: (d: ComportementData) => void;
+  addEvaluation: (e: EvaluationData) => void;
+  updateEvaluation: (id: string, patch: Partial<EvaluationData>) => void;
+  deleteEvaluation: (id: string) => void;
   updateUser: (patch: Partial<UserProfile>) => void;
+  login: (displayName: string) => void;
+  logout: () => void;
   reset: () => void;
 }
 
@@ -126,7 +164,9 @@ export const useCirta = create<State>()(
       entretiens: {},
       tests: {},
       comportements: {},
+      evaluations: [],
       user: defaultUser,
+      auth: { isLoggedIn: false, displayName: "" },
       setStatut: (id, s) => set((st) => ({ candidats: st.candidats.map((c) => (c.id === id ? { ...c, statut: s } : c)) })),
       setScore: (id, score) => set((st) => ({ candidats: st.candidats.map((c) => (c.id === id ? { ...c, score } : c)) })),
       updateCandidat: (id, patch) => set((st) => ({ candidats: st.candidats.map((c) => (c.id === id ? { ...c, ...patch } : c)) })),
@@ -140,9 +180,14 @@ export const useCirta = create<State>()(
       saveEntretien: (d) => set((st) => ({ entretiens: { ...st.entretiens, [d.candidatId]: { ...st.entretiens[d.candidatId], ...d } } })),
       saveTest: (d) => set((st) => ({ tests: { ...st.tests, [d.candidatId]: { ...st.tests[d.candidatId], ...d } } })),
       saveComportement: (d) => set((st) => ({ comportements: { ...st.comportements, [d.candidatId]: { ...st.comportements[d.candidatId], ...d } } })),
+      addEvaluation: (e) => set((st) => ({ evaluations: [e, ...st.evaluations] })),
+      updateEvaluation: (id, patch) => set((st) => ({ evaluations: st.evaluations.map((e) => (e.id === id ? { ...e, ...patch } : e)) })),
+      deleteEvaluation: (id) => set((st) => ({ evaluations: st.evaluations.filter((e) => e.id !== id) })),
       updateUser: (patch) => set((st) => ({ user: { ...st.user, ...patch } })),
-      reset: () => set({ candidats: seedExt, postes: POSTES, machines: MACHINES as MachineExt[], entretiens: {}, tests: {}, comportements: {}, user: defaultUser }),
+      login: (displayName) => set(() => ({ auth: { isLoggedIn: true, displayName } })),
+      logout: () => set(() => ({ auth: { isLoggedIn: false, displayName: "" } })),
+      reset: () => set({ candidats: seedExt, postes: POSTES, machines: MACHINES as MachineExt[], entretiens: {}, tests: {}, comportements: {}, evaluations: [], user: defaultUser }),
     }),
-    { name: "cirta-store-v3" },
+    { name: "cirta-store-v4" },
   ),
 );
