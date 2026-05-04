@@ -116,8 +116,7 @@ function Parametres() {
           <CardHeader><CardTitle className="text-base">Entreprise</CardTitle></CardHeader>
           <CardContent className="space-y-1 text-sm">
             <div><b>CIRTA AUTOMOTIVE</b></div>
-            <div className="text-muted-foreground">Zone Industrielle Ben Badis</div>
-            <div className="text-muted-foreground">El Khroub — Constantine, Algérie</div>
+            <div className="text-muted-foreground">Constantine, Algérie</div>
           </CardContent>
         </Card>
         <Card>
