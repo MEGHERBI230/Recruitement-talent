@@ -34,6 +34,7 @@ function CandidatsPage() {
   const candidats = useCirta((s) => s.candidats);
   const setScore = useCirta((s) => s.setScore);
   const addCandidat = useCirta((s) => s.addCandidat);
+  const weights = useCirta((s) => s.user.weights);
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ nom: "", prenom: "", posteVise: POSTES[0].intitule, experience: 0, diplome: "TS", competences: "", machines: "" });
@@ -42,7 +43,7 @@ function CandidatsPage() {
 
   const analyserTous = () => {
     candidats.forEach((c) => {
-      const s = scoreCandidat({ experience: c.experience, diplome: c.diplome, competences: c.competences, machinesMaitrisees: c.machinesMaitrisees, posteVise: c.posteVise });
+      const s = scoreCandidat({ experience: c.experience, diplome: c.diplome, competences: c.competences, machinesMaitrisees: c.machinesMaitrisees, posteVise: c.posteVise }, weights);
       setScore(c.id, s.total);
     });
     toast.success(`Analyse IA terminée — ${candidats.length} candidats notés`);
@@ -53,7 +54,7 @@ function CandidatsPage() {
     const poste = POSTES.find((p) => p.intitule === form.posteVise)!;
     const competences = form.competences.split(",").map((s) => s.trim()).filter(Boolean);
     const machines = form.machines.split(",").map((s) => s.trim()).filter(Boolean);
-    const sc = scoreCandidat({ experience: form.experience, diplome: form.diplome, competences, machinesMaitrisees: machines, posteVise: form.posteVise });
+    const sc = scoreCandidat({ experience: form.experience, diplome: form.diplome, competences, machinesMaitrisees: machines, posteVise: form.posteVise }, weights);
     addCandidat({
       id: `c${Date.now()}`, nom: form.nom, prenom: form.prenom, posteVise: form.posteVise,
       experience: form.experience, diplome: form.diplome, score: sc.total, statut: "analyse",

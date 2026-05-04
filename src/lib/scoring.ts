@@ -32,18 +32,27 @@ function rank(d: string) {
   return 1.5;
 }
 
-export function scoreCandidat(c: { experience: number; diplome: string; competences?: string[]; machinesMaitrisees?: string[]; posteVise: string }): ScoreBreakdown {
+export interface ScoreWeightsInput { competences?: number; experience?: number; diplome?: number; machines?: number }
+
+export function scoreCandidat(c: { experience: number; diplome: string; competences?: string[]; machinesMaitrisees?: string[]; posteVise: string }, weights?: ScoreWeightsInput): ScoreBreakdown {
+  const W = {
+    competences: weights?.competences ?? 40,
+    experience: weights?.experience ?? 25,
+    diplome: weights?.diplome ?? 15,
+    machines: weights?.machines ?? 20,
+  };
+  const TOTAL = W.competences + W.experience + W.diplome + W.machines || 100;
   const poste = POSTES.find((p) => p.intitule === c.posteVise);
   const forces: string[] = [];
   const faiblesses: string[] = [];
 
   // Compétences
-  let compScore = 20;
+  let compScore = Math.round(W.competences * 0.5);
   if (poste && c.competences && c.competences.length) {
     const req = poste.competences.map((x) => x.toLowerCase());
     const have = c.competences.map((x) => x.toLowerCase());
     const matched = req.filter((r) => have.some((h) => h.includes(r) || r.includes(h)));
-    compScore = Math.round((matched.length / Math.max(1, req.length)) * 40);
+    compScore = Math.round((matched.length / Math.max(1, req.length)) * W.competences);
     if (matched.length === req.length) forces.push("Couvre toutes les compétences clés");
     if (matched.length === 0) faiblesses.push("Aucune compétence clé alignée avec le poste");
   }
@@ -52,37 +61,38 @@ export function scoreCandidat(c: { experience: number; diplome: string; competen
   let expScore = 0;
   if (poste) {
     const ratio = c.experience / Math.max(1, poste.experienceMin);
-    expScore = Math.min(25, Math.round(ratio * 20));
+    expScore = Math.min(W.experience, Math.round(ratio * W.experience * 0.8));
     if (c.experience >= poste.experienceMin) forces.push(`Expérience suffisante (${c.experience} ans)`);
     else faiblesses.push(`Expérience insuffisante (${c.experience}/${poste.experienceMin} ans)`);
   } else {
-    expScore = Math.min(25, c.experience * 3);
+    expScore = Math.min(W.experience, c.experience * 3);
   }
 
   // Diplôme
-  let dipScore = 8;
+  let dipScore = Math.round(W.diplome * 0.5);
   if (poste) {
     const reqR = rank(poste.diplome);
     const candR = rank(c.diplome);
-    dipScore = candR >= reqR ? 15 : Math.max(0, 15 - Math.round((reqR - candR) * 6));
+    dipScore = candR >= reqR ? W.diplome : Math.max(0, W.diplome - Math.round((reqR - candR) * (W.diplome * 0.4)));
     if (candR >= reqR) forces.push("Diplôme conforme aux exigences");
     else faiblesses.push("Niveau de diplôme inférieur à l'exigence");
   }
 
   // Machines
-  let machScore = 10;
+  let machScore = Math.round(W.machines * 0.5);
   if (poste && poste.machines.length && c.machinesMaitrisees) {
     const req = poste.machines.map((x) => x.toLowerCase());
     const have = c.machinesMaitrisees.map((x) => x.toLowerCase());
     const matched = req.filter((r) => have.some((h) => h.includes(r.split(" ")[0]) || r.includes(h)));
-    machScore = Math.round((matched.length / req.length) * 20);
+    machScore = Math.round((matched.length / req.length) * W.machines);
     if (matched.length === req.length) forces.push("Maîtrise les machines requises");
     else if (matched.length === 0) faiblesses.push("Ne maîtrise aucune machine du poste");
   } else if (poste && !poste.machines.length) {
-    machScore = 18;
+    machScore = Math.round(W.machines * 0.9);
   }
 
-  const total = Math.min(100, compScore + expScore + dipScore + machScore);
+  const raw = compScore + expScore + dipScore + machScore;
+  const total = Math.min(100, Math.round((raw / TOTAL) * 100));
   let recommandation: ScoreBreakdown["recommandation"] = "REJET";
   if (total >= 85) recommandation = "FORT";
   else if (total >= 70) recommandation = "BON";
@@ -94,7 +104,7 @@ export function scoreCandidat(c: { experience: number; diplome: string; competen
   const matched = reqMach.filter((r) =>
     haveMach.some((h) => h.toLowerCase().includes(r.split(" ")[0].toLowerCase()) || r.toLowerCase().includes(h.toLowerCase())),
   );
-  const technique = Math.round((compScore / 40) * 60 + (machScore / 20) * 40);
+  const technique = Math.round((compScore / Math.max(1, W.competences)) * 60 + (machScore / Math.max(1, W.machines)) * 40);
   const terrain = Math.min(100, Math.round((c.experience / Math.max(1, poste?.experienceMin ?? 5)) * 80));
   const autonomie = Math.min(100, Math.round(c.experience * 8 + rank(c.diplome) * 10));
   const comportement = 60;

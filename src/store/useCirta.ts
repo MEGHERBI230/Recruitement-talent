@@ -56,12 +56,23 @@ export interface CandidatExt extends Candidat {
   historique?: { date: string; event: string }[];
 }
 
+export interface ScoreWeights {
+  competences: number;
+  experience: number;
+  diplome: number;
+  machines: number;
+}
+
 export interface UserProfile {
   nom: string;
   fonction: string;
   email: string;
   telephone: string;
+  signature?: string; // dataURL — signature + cachet + griffe
+  weights: ScoreWeights;
 }
+
+export const DEFAULT_WEIGHTS: ScoreWeights = { competences: 40, experience: 25, diplome: 15, machines: 20 };
 
 interface State {
   candidats: CandidatExt[];
@@ -93,6 +104,8 @@ const defaultUser: UserProfile = {
   fonction: "Directeur des Opérations",
   email: "",
   telephone: "",
+  signature: undefined,
+  weights: DEFAULT_WEIGHTS,
 };
 
 const seedExt: CandidatExt[] = CANDIDATS.map((c) => ({

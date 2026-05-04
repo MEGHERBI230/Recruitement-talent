@@ -19,7 +19,8 @@ function RapportCandidat() {
   const compt = useCirta((s) => s.comportements[id]);
   if (!candidat) return <div className="p-6">Candidat introuvable</div>;
 
-  const sc = scoreCandidat({ experience: candidat.experience, diplome: candidat.diplome, competences: candidat.competences, machinesMaitrisees: candidat.machinesMaitrisees, posteVise: candidat.posteVise });
+  const weights = useCirta((s) => s.user.weights);
+  const sc = scoreCandidat({ experience: candidat.experience, diplome: candidat.diplome, competences: candidat.competences, machinesMaitrisees: candidat.machinesMaitrisees, posteVise: candidat.posteVise }, weights);
   const poste = POSTES.find((p) => p.intitule === candidat.posteVise);
 
   const moy = (() => {

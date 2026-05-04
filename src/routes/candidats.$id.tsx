@@ -41,7 +41,8 @@ function FicheCandidat() {
     );
   }
 
-  const sc = scoreCandidat({ experience: candidat.experience, diplome: candidat.diplome, competences: candidat.competences, machinesMaitrisees: candidat.machinesMaitrisees, posteVise: candidat.posteVise });
+  const weights = useCirta((s) => s.user.weights);
+  const sc = scoreCandidat({ experience: candidat.experience, diplome: candidat.diplome, competences: candidat.competences, machinesMaitrisees: candidat.machinesMaitrisees, posteVise: candidat.posteVise }, weights);
   const poste = POSTES.find((p) => p.intitule === candidat.posteVise);
 
   const reanalyser = () => { setScore(candidat.id, sc.total); toast.success(`Score IA recalculé: ${sc.total}%`); };
