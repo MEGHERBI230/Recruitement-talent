@@ -30,11 +30,13 @@ export const Route = createFileRoute("/postes")({ component: PostesPage });
 interface FormState {
   intitule: string; bu: BU; quantite: number; priorite: Priority;
   experienceMin: number; diplome: string; competences: string; machines: string[];
+  hardSkills: string; softSkills: string;
 }
 
 const EMPTY: FormState = {
   intitule: "", bu: "BU1", quantite: 1, priorite: "prioritaire",
   experienceMin: 1, diplome: "TS", competences: "", machines: [],
+  hardSkills: "", softSkills: "",
 };
 
 function PostesPage() {
@@ -66,6 +68,8 @@ function PostesPage() {
       intitule: p.intitule, bu: p.bu, quantite: p.quantite, priorite: p.priorite,
       experienceMin: p.experienceMin, diplome: p.diplome,
       competences: p.competences.join(", "), machines: [...p.machines],
+      hardSkills: (p.hardSkills ?? []).join(", "),
+      softSkills: (p.softSkills ?? []).join(", "),
     });
     setOpen(true);
   };
@@ -74,11 +78,18 @@ function PostesPage() {
     if (!form.intitule.trim()) { toast.error("L'intitulé est requis"); return; }
     const competences = form.competences.split(",").map((s) => s.trim()).filter(Boolean);
     const machines = form.machines.filter(Boolean);
+    const hardSkills = form.hardSkills.split(",").map((s) => s.trim()).filter(Boolean);
+    const softSkills = form.softSkills.split(",").map((s) => s.trim()).filter(Boolean);
+    const payload = {
+      intitule: form.intitule, bu: form.bu, quantite: form.quantite, priorite: form.priorite,
+      experienceMin: form.experienceMin, diplome: form.diplome,
+      competences, machines, hardSkills, softSkills,
+    };
     if (editId) {
-      updatePoste(editId, { ...form, competences, machines });
+      updatePoste(editId, payload);
       toast.success("Poste modifié");
     } else {
-      addPoste({ id: `p${Date.now()}`, ...form, competences, machines });
+      addPoste({ id: `p${Date.now()}`, ...payload });
       toast.success("Poste ajouté");
     }
     setOpen(false);
