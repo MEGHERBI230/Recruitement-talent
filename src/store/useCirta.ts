@@ -7,7 +7,7 @@ export interface MachineExt extends Machine {
 }
 
 export interface InterviewQA { question: string; objectif: string; categorie: string }
-export interface InterviewAnalyse { score: number; recommandation: "FORT" | "BON" | "MOYEN" | "FAIBLE" | "REJET"; forces: string[]; faiblesses: string[]; synthese: string }
+export interface InterviewAnalyse { score: number; recommandation: "FORT" | "BON" | "MOYEN" | "FAIBLE" | "REJET"; forces: string[]; faiblesses: string[]; synthese: string; risqueSurevaluation?: "faible" | "moyen" | "élevé"; incoherences?: string[]; relances?: string[] }
 export interface EntretienData {
   candidatId: string;
   date?: string;
