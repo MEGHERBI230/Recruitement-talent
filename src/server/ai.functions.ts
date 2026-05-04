@@ -360,3 +360,130 @@ Produis un plan de redémarrage : ordre de recrutement, postes critiques, risque
     });
     return extractToolArgs(j);
   });
+
+// ========== ÉVALUATIONS RH (période d'essai, renouvellement, CDD→CDI) ==========
+export const generateRhEvaluation = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => d as {
+    type: "periode_essai" | "renouvellement_cdd" | "cdd_to_cdi";
+    poste: string;
+    bu: string;
+    experience: number;
+    competences?: string[];
+    machines?: string[];
+    moisAnciennete?: number;
+  })
+  .handler(async ({ data }) => {
+    const ctxByType: Record<string, { titre: string; objectif: string; profondeur: string }> = {
+      periode_essai: {
+        titre: "Validation période d'essai",
+        objectif: "Décider si le collaborateur valide sa période d'essai (≈ 3 à 6 mois) et est apte à être confirmé.",
+        profondeur: "Centre l'évaluation sur l'intégration, la tenue de poste, le respect des règles, la fiabilité quotidienne, la qualité du travail réalisé pendant l'essai.",
+      },
+      renouvellement_cdd: {
+        titre: "Renouvellement CDD (1 an)",
+        objectif: "Décider si l'on renouvelle le CDD pour une nouvelle période d'un an.",
+        profondeur: "Évalue la performance sur la durée écoulée, l'évolution des compétences, l'autonomie acquise, la valeur ajoutée pour la BU et la motivation à poursuivre.",
+      },
+      cdd_to_cdi: {
+        titre: "Passage CDD → CDI",
+        objectif: "Décider de transformer le CDD en CDI (engagement long terme).",
+        profondeur: "Évalue la maîtrise complète du poste, la fiabilité long terme, la capacité à transmettre / encadrer, la loyauté et l'alignement avec la stratégie industrielle.",
+      },
+    };
+    const ctx = ctxByType[data.type];
+    const sys = "Tu es Directeur des Opérations CIRTA AUTOMOTIVE. Tu conçois des grilles d'évaluation RH industrielles, courtes, opérationnelles, signées par le manager. Pas de blabla RH générique : questions concrètes, vérifiables sur le terrain, adaptées à l'industrie automobile algérienne.";
+    const user = `Génère une grille d'évaluation pour : ${ctx.titre}.
+Poste : ${data.poste} (BU ${data.bu})
+Expérience candidat : ${data.experience} ans — Ancienneté chez CIRTA : ${data.moisAnciennete ?? "?"} mois
+Compétences clés : ${(data.competences ?? []).join(", ") || "—"}
+Machines : ${(data.machines ?? []).join(", ") || "—"}
+
+Objectif : ${ctx.objectif}
+${ctx.profondeur}
+
+Produis 8 questions max, mix de :
+- Tenue de poste (technique, qualité, productivité)
+- Comportement (assiduité, sécurité, respect règles, esprit d'équipe)
+- Autonomie & initiative
+- Évolution / potentiel
+Chaque question a un objectif clair et un barème /5.`;
+    const j = await callAI({
+      model: "google/gemini-2.5-flash",
+      messages: [{ role: "system", content: sys }, { role: "user", content: user }],
+      tools: [{
+        type: "function",
+        function: {
+          name: "rh_eval",
+          parameters: {
+            type: "object",
+            properties: {
+              questions: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    question: { type: "string" },
+                    objectif: { type: "string" },
+                    categorie: { type: "string", enum: ["technique", "comportement", "autonomie", "potentiel"] },
+                    bareme: { type: "number" },
+                  },
+                  required: ["question", "objectif", "categorie", "bareme"],
+                },
+              },
+            },
+            required: ["questions"],
+          },
+        },
+      }],
+      tool_choice: { type: "function", function: { name: "rh_eval" } },
+    });
+    return extractToolArgs(j) as { questions: { question: string; objectif: string; categorie: string; bareme: number }[] };
+  });
+
+export const analyzeRhEvaluation = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => d as {
+    type: "periode_essai" | "renouvellement_cdd" | "cdd_to_cdi";
+    poste: string;
+    items: { question: string; objectif: string; bareme: number; note: number; commentaire: string }[];
+    observationsTerrain?: string;
+  })
+  .handler(async ({ data }) => {
+    const decisionLabel: Record<string, string> = {
+      periode_essai: "Valider / prolonger / ne pas valider la période d'essai",
+      renouvellement_cdd: "Renouveler / ne pas renouveler le CDD",
+      cdd_to_cdi: "Transformer en CDI / maintenir en CDD / ne pas confirmer",
+    };
+    const sys = "Tu es Directeur des Opérations CIRTA AUTOMOTIVE. Tu rends des décisions RH fermes, justes, motivées par les faits. Tu ne fais pas de complaisance.";
+    const user = `Évaluation : ${data.type} — Poste : ${data.poste}
+Notes :
+${data.items.map((it, i) => `${i + 1}. [${it.objectif}] ${it.question} — ${it.note}/${it.bareme} — ${it.commentaire || "(sans commentaire)"}`).join("\n")}
+
+Observations terrain du manager :
+${data.observationsTerrain || "(aucune)"}
+
+Donne : score global /100, verdict (VALIDÉ / À CONSOLIDER / NON VALIDÉ), forces (3 max), axes de progrès (3 max), décision recommandée concrète parmi : ${decisionLabel[data.type]}, et une synthèse exécutive de 3 lignes max.`;
+    const j = await callAI({
+      model: "google/gemini-2.5-flash",
+      messages: [{ role: "system", content: sys }, { role: "user", content: user }],
+      tools: [{
+        type: "function",
+        function: {
+          name: "rh_decision",
+          parameters: {
+            type: "object",
+            properties: {
+              scoreGlobal: { type: "number" },
+              verdict: { type: "string", enum: ["VALIDÉ", "À CONSOLIDER", "NON VALIDÉ"] },
+              forces: { type: "array", items: { type: "string" } },
+              axesProgres: { type: "array", items: { type: "string" } },
+              decisionRecommandee: { type: "string" },
+              synthese: { type: "string" },
+            },
+            required: ["scoreGlobal", "verdict", "forces", "axesProgres", "decisionRecommandee", "synthese"],
+          },
+        },
+      }],
+      tool_choice: { type: "function", function: { name: "rh_decision" } },
+    });
+    return extractToolArgs(j);
+  });
