@@ -29,12 +29,12 @@ export const Route = createFileRoute("/postes")({ component: PostesPage });
 
 interface FormState {
   intitule: string; bu: BU; quantite: number; priorite: Priority;
-  experienceMin: number; diplome: string; competences: string; machines: string;
+  experienceMin: number; diplome: string; competences: string; machines: string[];
 }
 
 const EMPTY: FormState = {
   intitule: "", bu: "BU1", quantite: 1, priorite: "prioritaire",
-  experienceMin: 1, diplome: "TS", competences: "", machines: "",
+  experienceMin: 1, diplome: "TS", competences: "", machines: [],
 };
 
 function PostesPage() {
