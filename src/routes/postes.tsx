@@ -197,7 +197,32 @@ function PostesPage() {
               </Select>
             </div>
             <div className="col-span-2"><Label>Compétences clés (séparées par virgules)</Label><Textarea rows={2} value={form.competences} onChange={(e) => setForm({ ...form, competences: e.target.value })} /></div>
-            <div className="col-span-2"><Label>Machines liées (séparées par virgules)</Label><Textarea rows={2} value={form.machines} onChange={(e) => setForm({ ...form, machines: e.target.value })} /></div>
+            <div className="col-span-2">
+              <Label>Machines liées</Label>
+              <div className="space-y-2">
+                {form.machines.length === 0 && (
+                  <p className="text-xs text-muted-foreground">Aucune machine. Cliquez sur "Ajouter une machine" pour en associer.</p>
+                )}
+                {form.machines.map((m, i) => (
+                  <div key={i} className="flex gap-2">
+                    <Select value={m} onValueChange={(v) => setMachineAt(i, v)}>
+                      <SelectTrigger className="flex-1"><SelectValue placeholder="Choisir une machine..." /></SelectTrigger>
+                      <SelectContent>
+                        {MACHINES.filter((mc) => mc.bu === form.bu || mc.bu === "TRANSV").map((mc) => (
+                          <SelectItem key={mc.id} value={mc.nom} disabled={form.machines.includes(mc.nom) && mc.nom !== m}>
+                            {mc.nom}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button type="button" variant="ghost" size="icon" onClick={() => removeMachineAt(i)}><X className="h-4 w-4" /></Button>
+                  </div>
+                ))}
+                <Button type="button" variant="outline" size="sm" onClick={addMachineSlot}>
+                  <Plus className="mr-2 h-4 w-4" /> Ajouter une machine
+                </Button>
+              </div>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>Annuler</Button>
