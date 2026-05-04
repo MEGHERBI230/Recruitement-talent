@@ -108,9 +108,9 @@ function RapportCandidat() {
                 {compt && <tr className="border-b border-border"><td className="p-2">Comportemental</td><td className="p-2 text-right font-bold">{compt.scoreGlobal}%</td></tr>}
               </tbody>
             </table>
-            {ent?.commentaires && <div className="mt-2 text-xs"><span className="font-bold">Commentaires entretien :</span> {ent.commentaires}</div>}
-            {test?.observations && <div className="mt-1 text-xs"><span className="font-bold">Observations test :</span> {test.observations}</div>}
-            {compt?.commentaires && <div className="mt-1 text-xs"><span className="font-bold">Comportemental :</span> {compt.commentaires}</div>}
+            {ent?.analyse?.synthese && <div className="mt-2 text-xs"><span className="font-bold">Entretien :</span> {ent.analyse.synthese}</div>}
+            {test?.analyse?.commentaires && <div className="mt-1 text-xs"><span className="font-bold">Test pratique :</span> {test.analyse.commentaires} — Verdict : {test.analyse.verdict}</div>}
+            {compt?.analyse?.synthese && <div className="mt-1 text-xs"><span className="font-bold">Comportemental :</span> {compt.analyse.synthese}</div>}
           </section>
         )}
 
