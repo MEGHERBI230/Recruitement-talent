@@ -126,7 +126,7 @@ function RapportCandidat() {
         )}
 
         <footer className="mt-8 border-t border-border pt-3 text-[10px] text-muted-foreground">
-          CIRTA RECRUITMENT ASSISTANT — Document confidentiel — Signature Direction des Opérations : ____________________
+          CIRTA RECRUITMENT ASSISTANT — Document confidentiel établi par M. MEGHERBI Nabil, Directeur des Opérations — Signature : ____________________
         </footer>
       </div>
     </div>
