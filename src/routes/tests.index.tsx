@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { ClipboardCheck } from "lucide-react";
 import { useCirta } from "@/store/useCirta";
 
-export const Route = createFileRoute("/tests")({ component: TestsIndex });
+export const Route = createFileRoute("/tests/")({ component: TestsIndex });
 
 function TestsIndex() {
   const candidats = useCirta((s) => s.candidats);

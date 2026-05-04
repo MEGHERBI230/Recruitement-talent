@@ -9,31 +9,21 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TestsRouteImport } from './routes/tests'
-import { Route as RapportsRouteImport } from './routes/rapports'
 import { Route as PostesRouteImport } from './routes/postes'
 import { Route as ParametresRouteImport } from './routes/parametres'
 import { Route as MachinesRouteImport } from './routes/machines'
-import { Route as EntretiensRouteImport } from './routes/entretiens'
-import { Route as ComportementRouteImport } from './routes/comportement'
-import { Route as CandidatsRouteImport } from './routes/candidats'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TestsIndexRouteImport } from './routes/tests.index'
+import { Route as RapportsIndexRouteImport } from './routes/rapports.index'
+import { Route as EntretiensIndexRouteImport } from './routes/entretiens.index'
+import { Route as ComportementIndexRouteImport } from './routes/comportement.index'
+import { Route as CandidatsIndexRouteImport } from './routes/candidats.index'
 import { Route as TestsIdRouteImport } from './routes/tests.$id'
 import { Route as RapportsIdRouteImport } from './routes/rapports.$id'
 import { Route as EntretiensIdRouteImport } from './routes/entretiens.$id'
 import { Route as ComportementIdRouteImport } from './routes/comportement.$id'
 import { Route as CandidatsIdRouteImport } from './routes/candidats.$id'
 
-const TestsRoute = TestsRouteImport.update({
-  id: '/tests',
-  path: '/tests',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RapportsRoute = RapportsRouteImport.update({
-  id: '/rapports',
-  path: '/rapports',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PostesRoute = PostesRouteImport.update({
   id: '/postes',
   path: '/postes',
@@ -49,24 +39,34 @@ const MachinesRoute = MachinesRouteImport.update({
   path: '/machines',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EntretiensRoute = EntretiensRouteImport.update({
-  id: '/entretiens',
-  path: '/entretiens',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ComportementRoute = ComportementRouteImport.update({
-  id: '/comportement',
-  path: '/comportement',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CandidatsRoute = CandidatsRouteImport.update({
-  id: '/candidats',
-  path: '/candidats',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TestsIndexRoute = TestsIndexRouteImport.update({
+  id: '/tests/',
+  path: '/tests/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RapportsIndexRoute = RapportsIndexRouteImport.update({
+  id: '/rapports/',
+  path: '/rapports/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EntretiensIndexRoute = EntretiensIndexRouteImport.update({
+  id: '/entretiens/',
+  path: '/entretiens/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ComportementIndexRoute = ComportementIndexRouteImport.update({
+  id: '/comportement/',
+  path: '/comportement/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CandidatsIndexRoute = CandidatsIndexRouteImport.update({
+  id: '/candidats/',
+  path: '/candidats/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TestsIdRoute = TestsIdRouteImport.update({
@@ -97,132 +97,118 @@ const CandidatsIdRoute = CandidatsIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/candidats': typeof CandidatsRouteWithChildren
-  '/comportement': typeof ComportementRouteWithChildren
-  '/entretiens': typeof EntretiensRouteWithChildren
   '/machines': typeof MachinesRoute
   '/parametres': typeof ParametresRoute
   '/postes': typeof PostesRoute
-  '/rapports': typeof RapportsRouteWithChildren
-  '/tests': typeof TestsRouteWithChildren
   '/candidats/$id': typeof CandidatsIdRoute
   '/comportement/$id': typeof ComportementIdRoute
   '/entretiens/$id': typeof EntretiensIdRoute
   '/rapports/$id': typeof RapportsIdRoute
   '/tests/$id': typeof TestsIdRoute
+  '/candidats/': typeof CandidatsIndexRoute
+  '/comportement/': typeof ComportementIndexRoute
+  '/entretiens/': typeof EntretiensIndexRoute
+  '/rapports/': typeof RapportsIndexRoute
+  '/tests/': typeof TestsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/candidats': typeof CandidatsRouteWithChildren
-  '/comportement': typeof ComportementRouteWithChildren
-  '/entretiens': typeof EntretiensRouteWithChildren
   '/machines': typeof MachinesRoute
   '/parametres': typeof ParametresRoute
   '/postes': typeof PostesRoute
-  '/rapports': typeof RapportsRouteWithChildren
-  '/tests': typeof TestsRouteWithChildren
   '/candidats/$id': typeof CandidatsIdRoute
   '/comportement/$id': typeof ComportementIdRoute
   '/entretiens/$id': typeof EntretiensIdRoute
   '/rapports/$id': typeof RapportsIdRoute
   '/tests/$id': typeof TestsIdRoute
+  '/candidats': typeof CandidatsIndexRoute
+  '/comportement': typeof ComportementIndexRoute
+  '/entretiens': typeof EntretiensIndexRoute
+  '/rapports': typeof RapportsIndexRoute
+  '/tests': typeof TestsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/candidats': typeof CandidatsRouteWithChildren
-  '/comportement': typeof ComportementRouteWithChildren
-  '/entretiens': typeof EntretiensRouteWithChildren
   '/machines': typeof MachinesRoute
   '/parametres': typeof ParametresRoute
   '/postes': typeof PostesRoute
-  '/rapports': typeof RapportsRouteWithChildren
-  '/tests': typeof TestsRouteWithChildren
   '/candidats/$id': typeof CandidatsIdRoute
   '/comportement/$id': typeof ComportementIdRoute
   '/entretiens/$id': typeof EntretiensIdRoute
   '/rapports/$id': typeof RapportsIdRoute
   '/tests/$id': typeof TestsIdRoute
+  '/candidats/': typeof CandidatsIndexRoute
+  '/comportement/': typeof ComportementIndexRoute
+  '/entretiens/': typeof EntretiensIndexRoute
+  '/rapports/': typeof RapportsIndexRoute
+  '/tests/': typeof TestsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/candidats'
-    | '/comportement'
-    | '/entretiens'
     | '/machines'
     | '/parametres'
     | '/postes'
-    | '/rapports'
-    | '/tests'
     | '/candidats/$id'
     | '/comportement/$id'
     | '/entretiens/$id'
     | '/rapports/$id'
     | '/tests/$id'
+    | '/candidats/'
+    | '/comportement/'
+    | '/entretiens/'
+    | '/rapports/'
+    | '/tests/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/candidats'
-    | '/comportement'
-    | '/entretiens'
     | '/machines'
     | '/parametres'
     | '/postes'
-    | '/rapports'
-    | '/tests'
     | '/candidats/$id'
     | '/comportement/$id'
     | '/entretiens/$id'
     | '/rapports/$id'
     | '/tests/$id'
+    | '/candidats'
+    | '/comportement'
+    | '/entretiens'
+    | '/rapports'
+    | '/tests'
   id:
     | '__root__'
     | '/'
-    | '/candidats'
-    | '/comportement'
-    | '/entretiens'
     | '/machines'
     | '/parametres'
     | '/postes'
-    | '/rapports'
-    | '/tests'
     | '/candidats/$id'
     | '/comportement/$id'
     | '/entretiens/$id'
     | '/rapports/$id'
     | '/tests/$id'
+    | '/candidats/'
+    | '/comportement/'
+    | '/entretiens/'
+    | '/rapports/'
+    | '/tests/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CandidatsRoute: typeof CandidatsRouteWithChildren
-  ComportementRoute: typeof ComportementRouteWithChildren
-  EntretiensRoute: typeof EntretiensRouteWithChildren
   MachinesRoute: typeof MachinesRoute
   ParametresRoute: typeof ParametresRoute
   PostesRoute: typeof PostesRoute
-  RapportsRoute: typeof RapportsRouteWithChildren
-  TestsRoute: typeof TestsRouteWithChildren
+  CandidatsIndexRoute: typeof CandidatsIndexRoute
+  ComportementIndexRoute: typeof ComportementIndexRoute
+  EntretiensIndexRoute: typeof EntretiensIndexRoute
+  RapportsIndexRoute: typeof RapportsIndexRoute
+  TestsIndexRoute: typeof TestsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/tests': {
-      id: '/tests'
-      path: '/tests'
-      fullPath: '/tests'
-      preLoaderRoute: typeof TestsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/rapports': {
-      id: '/rapports'
-      path: '/rapports'
-      fullPath: '/rapports'
-      preLoaderRoute: typeof RapportsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/postes': {
       id: '/postes'
       path: '/postes'
@@ -244,32 +230,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MachinesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/entretiens': {
-      id: '/entretiens'
-      path: '/entretiens'
-      fullPath: '/entretiens'
-      preLoaderRoute: typeof EntretiensRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/comportement': {
-      id: '/comportement'
-      path: '/comportement'
-      fullPath: '/comportement'
-      preLoaderRoute: typeof ComportementRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/candidats': {
-      id: '/candidats'
-      path: '/candidats'
-      fullPath: '/candidats'
-      preLoaderRoute: typeof CandidatsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tests/': {
+      id: '/tests/'
+      path: '/tests'
+      fullPath: '/tests/'
+      preLoaderRoute: typeof TestsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rapports/': {
+      id: '/rapports/'
+      path: '/rapports'
+      fullPath: '/rapports/'
+      preLoaderRoute: typeof RapportsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/entretiens/': {
+      id: '/entretiens/'
+      path: '/entretiens'
+      fullPath: '/entretiens/'
+      preLoaderRoute: typeof EntretiensIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/comportement/': {
+      id: '/comportement/'
+      path: '/comportement'
+      fullPath: '/comportement/'
+      preLoaderRoute: typeof ComportementIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/candidats/': {
+      id: '/candidats/'
+      path: '/candidats'
+      fullPath: '/candidats/'
+      preLoaderRoute: typeof CandidatsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tests/$id': {
@@ -310,75 +310,26 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface CandidatsRouteChildren {
-  CandidatsIdRoute: typeof CandidatsIdRoute
-}
-
-const CandidatsRouteChildren: CandidatsRouteChildren = {
-  CandidatsIdRoute: CandidatsIdRoute,
-}
-
-const CandidatsRouteWithChildren = CandidatsRoute._addFileChildren(
-  CandidatsRouteChildren,
-)
-
-interface ComportementRouteChildren {
-  ComportementIdRoute: typeof ComportementIdRoute
-}
-
-const ComportementRouteChildren: ComportementRouteChildren = {
-  ComportementIdRoute: ComportementIdRoute,
-}
-
-const ComportementRouteWithChildren = ComportementRoute._addFileChildren(
-  ComportementRouteChildren,
-)
-
-interface EntretiensRouteChildren {
-  EntretiensIdRoute: typeof EntretiensIdRoute
-}
-
-const EntretiensRouteChildren: EntretiensRouteChildren = {
-  EntretiensIdRoute: EntretiensIdRoute,
-}
-
-const EntretiensRouteWithChildren = EntretiensRoute._addFileChildren(
-  EntretiensRouteChildren,
-)
-
-interface RapportsRouteChildren {
-  RapportsIdRoute: typeof RapportsIdRoute
-}
-
-const RapportsRouteChildren: RapportsRouteChildren = {
-  RapportsIdRoute: RapportsIdRoute,
-}
-
-const RapportsRouteWithChildren = RapportsRoute._addFileChildren(
-  RapportsRouteChildren,
-)
-
-interface TestsRouteChildren {
-  TestsIdRoute: typeof TestsIdRoute
-}
-
-const TestsRouteChildren: TestsRouteChildren = {
-  TestsIdRoute: TestsIdRoute,
-}
-
-const TestsRouteWithChildren = TestsRoute._addFileChildren(TestsRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CandidatsRoute: CandidatsRouteWithChildren,
-  ComportementRoute: ComportementRouteWithChildren,
-  EntretiensRoute: EntretiensRouteWithChildren,
   MachinesRoute: MachinesRoute,
   ParametresRoute: ParametresRoute,
   PostesRoute: PostesRoute,
-  RapportsRoute: RapportsRouteWithChildren,
-  TestsRoute: TestsRouteWithChildren,
+  CandidatsIndexRoute: CandidatsIndexRoute,
+  ComportementIndexRoute: ComportementIndexRoute,
+  EntretiensIndexRoute: EntretiensIndexRoute,
+  RapportsIndexRoute: RapportsIndexRoute,
+  TestsIndexRoute: TestsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}

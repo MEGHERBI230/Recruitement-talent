@@ -16,7 +16,7 @@ import { useCirta } from "@/store/useCirta";
 import { scoreCandidat } from "@/lib/scoring";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/candidats")({ component: CandidatsPage });
+export const Route = createFileRoute("/candidats/")({ component: CandidatsPage });
 
 function ScoreBar({ value }: { value: number }) {
   const tone = value >= 80 ? "bg-success" : value >= 65 ? "bg-warning" : value >= 50 ? "bg-info" : "bg-destructive";

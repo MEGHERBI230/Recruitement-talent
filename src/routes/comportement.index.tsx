@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { FlaskConical } from "lucide-react";
 import { useCirta } from "@/store/useCirta";
 
-export const Route = createFileRoute("/comportement")({ component: ComptIndex });
+export const Route = createFileRoute("/comportement/")({ component: ComptIndex });
 
 function ComptIndex() {
   const candidats = useCirta((s) => s.candidats);

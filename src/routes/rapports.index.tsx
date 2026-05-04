@@ -9,7 +9,7 @@ import { POSTES, BU_LABELS, BU, MACHINES, STATUT_LABELS } from "@/data/cirta";
 import { printPage } from "@/lib/print";
 import logo from "@/assets/logo-cirta.png";
 
-export const Route = createFileRoute("/rapports")({ component: RapportsIndex });
+export const Route = createFileRoute("/rapports/")({ component: RapportsIndex });
 
 function RapportsIndex() {
   const candidats = useCirta((s) => s.candidats);
