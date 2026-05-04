@@ -28,7 +28,8 @@ export function LetterheadFooter() {
   return (
     <div className="print-footer hidden print:block">
       <div className="mt-4 border-t border-black pt-2 text-center text-xs">
-        Contactez-nous : contact@cirtaautomautive-dz.com — +213 555 00 12 40 — www.cirtaautomotive-dz.com
+        <div>Application interne développée et utilisée par M. MEGHERBI Nabil — Directeur des Opérations</div>
+        <div>Contactez-nous : contact@cirtaautomautive-dz.com — +213 555 00 12 40 — www.cirtaautomotive-dz.com</div>
       </div>
     </div>
   );
