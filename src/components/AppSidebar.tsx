@@ -9,6 +9,7 @@ import {
   FlaskConical,
   FileBarChart,
   Settings,
+  Factory,
 } from "lucide-react";
 import {
   Sidebar,
