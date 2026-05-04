@@ -18,6 +18,7 @@ import { Route as EntretiensRouteImport } from './routes/entretiens'
 import { Route as ComportementRouteImport } from './routes/comportement'
 import { Route as CandidatsRouteImport } from './routes/candidats'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CandidatsIdRouteImport } from './routes/candidats.$id'
 
 const TestsRoute = TestsRouteImport.update({
   id: '/tests',
@@ -64,10 +65,15 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CandidatsIdRoute = CandidatsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => CandidatsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/candidats': typeof CandidatsRoute
+  '/candidats': typeof CandidatsRouteWithChildren
   '/comportement': typeof ComportementRoute
   '/entretiens': typeof EntretiensRoute
   '/machines': typeof MachinesRoute
@@ -75,10 +81,11 @@ export interface FileRoutesByFullPath {
   '/postes': typeof PostesRoute
   '/rapports': typeof RapportsRoute
   '/tests': typeof TestsRoute
+  '/candidats/$id': typeof CandidatsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/candidats': typeof CandidatsRoute
+  '/candidats': typeof CandidatsRouteWithChildren
   '/comportement': typeof ComportementRoute
   '/entretiens': typeof EntretiensRoute
   '/machines': typeof MachinesRoute
@@ -86,11 +93,12 @@ export interface FileRoutesByTo {
   '/postes': typeof PostesRoute
   '/rapports': typeof RapportsRoute
   '/tests': typeof TestsRoute
+  '/candidats/$id': typeof CandidatsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/candidats': typeof CandidatsRoute
+  '/candidats': typeof CandidatsRouteWithChildren
   '/comportement': typeof ComportementRoute
   '/entretiens': typeof EntretiensRoute
   '/machines': typeof MachinesRoute
@@ -98,6 +106,7 @@ export interface FileRoutesById {
   '/postes': typeof PostesRoute
   '/rapports': typeof RapportsRoute
   '/tests': typeof TestsRoute
+  '/candidats/$id': typeof CandidatsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -111,6 +120,7 @@ export interface FileRouteTypes {
     | '/postes'
     | '/rapports'
     | '/tests'
+    | '/candidats/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -122,6 +132,7 @@ export interface FileRouteTypes {
     | '/postes'
     | '/rapports'
     | '/tests'
+    | '/candidats/$id'
   id:
     | '__root__'
     | '/'
@@ -133,11 +144,12 @@ export interface FileRouteTypes {
     | '/postes'
     | '/rapports'
     | '/tests'
+    | '/candidats/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CandidatsRoute: typeof CandidatsRoute
+  CandidatsRoute: typeof CandidatsRouteWithChildren
   ComportementRoute: typeof ComportementRoute
   EntretiensRoute: typeof EntretiensRoute
   MachinesRoute: typeof MachinesRoute
@@ -212,12 +224,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/candidats/$id': {
+      id: '/candidats/$id'
+      path: '/$id'
+      fullPath: '/candidats/$id'
+      preLoaderRoute: typeof CandidatsIdRouteImport
+      parentRoute: typeof CandidatsRoute
+    }
   }
 }
 
+interface CandidatsRouteChildren {
+  CandidatsIdRoute: typeof CandidatsIdRoute
+}
+
+const CandidatsRouteChildren: CandidatsRouteChildren = {
+  CandidatsIdRoute: CandidatsIdRoute,
+}
+
+const CandidatsRouteWithChildren = CandidatsRoute._addFileChildren(
+  CandidatsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CandidatsRoute: CandidatsRoute,
+  CandidatsRoute: CandidatsRouteWithChildren,
   ComportementRoute: ComportementRoute,
   EntretiensRoute: EntretiensRoute,
   MachinesRoute: MachinesRoute,
