@@ -28,6 +28,7 @@ function FicheCandidat() {
   const candidat = useCirta((s) => s.candidats.find((c) => c.id === id));
   const setStatut = useCirta((s) => s.setStatut);
   const setScore = useCirta((s) => s.setScore);
+  const updateCandidat = useCirta((s) => s.updateCandidat);
   const entretien = useCirta((s) => s.entretiens[id]);
   const test = useCirta((s) => s.tests[id]);
   const compt = useCirta((s) => s.comportements[id]);
