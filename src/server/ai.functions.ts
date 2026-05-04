@@ -295,3 +295,68 @@ export const analyzeBehavior = createServerFn({ method: "POST" })
     });
     return extractToolArgs(j);
   });
+
+// ========== PLAN REDÉMARRAGE BU ==========
+export const planRestart = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => d as {
+    bu: string;
+    buLabel: string;
+    postes: { intitule: string; quantite: number; priorite: string; experienceMin: number; competences: string[]; machines: string[] }[];
+    machinesEtat: { nom: string; etat: string; criticite: string }[];
+    candidatsDisponibles: { posteVise: string; score: number; statut: string }[];
+    objectif?: string;
+  })
+  .handler(async ({ data }) => {
+    const sys = "Tu es Directeur Industriel expérimenté. Tu produis un plan de redémarrage opérationnel pragmatique d'une Business Unit automobile. Tu hiérarchises les recrutements, identifies les postes critiques, et signales les risques industriels concrets.";
+    const user = `BU à redémarrer : ${data.buLabel}
+Objectif utilisateur : ${data.objectif || "redémarrage standard"}
+
+POSTES OUVERTS :
+${data.postes.map((p) => `- ${p.intitule} (×${p.quantite}, ${p.priorite}, exp ${p.experienceMin}a) — machines: ${p.machines.join(", ") || "—"}`).join("\n")}
+
+PARC MACHINES :
+${data.machinesEtat.map((m) => `- ${m.nom} [${m.criticite}] : ${m.etat}`).join("\n")}
+
+CANDIDATS DÉJÀ EN PIPELINE :
+${data.candidatsDisponibles.map((c) => `- ${c.posteVise} | score ${c.score}% | ${c.statut}`).join("\n") || "(aucun)"}
+
+Produis un plan de redémarrage : ordre de recrutement, postes critiques, risques, jalons.`;
+
+    const j = await callAI({
+      model: "google/gemini-2.5-flash",
+      messages: [{ role: "system", content: sys }, { role: "user", content: user }],
+      tools: [{
+        type: "function",
+        function: {
+          name: "restart_plan",
+          parameters: {
+            type: "object",
+            properties: {
+              readiness: { type: "number", description: "0 à 100, niveau de préparation actuel" },
+              niveauRisque: { type: "string", enum: ["faible", "moyen", "élevé", "critique"] },
+              postesCritiques: { type: "array", items: { type: "string" } },
+              ordreRecrutement: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    poste: { type: "string" },
+                    priorite: { type: "number", description: "1 = à recruter en premier" },
+                    justification: { type: "string" },
+                    delaiCible: { type: "string", description: "ex: '2 semaines'" },
+                  },
+                  required: ["poste", "priorite", "justification", "delaiCible"],
+                },
+              },
+              risques: { type: "array", items: { type: "string" } },
+              jalons: { type: "array", items: { type: "string" }, description: "étapes clés du redémarrage" },
+              synthese: { type: "string" },
+            },
+            required: ["readiness", "niveauRisque", "postesCritiques", "ordreRecrutement", "risques", "jalons", "synthese"],
+          },
+        },
+      }],
+      tool_choice: { type: "function", function: { name: "restart_plan" } },
+    });
+    return extractToolArgs(j);
+  });
