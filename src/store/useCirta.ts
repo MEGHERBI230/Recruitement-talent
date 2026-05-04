@@ -1,6 +1,10 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { CANDIDATS, Candidat, CandidatStatut, POSTES, Poste } from "@/data/cirta";
+import { CANDIDATS, Candidat, CandidatStatut, POSTES, Poste, MACHINES, Machine } from "@/data/cirta";
+
+export interface MachineExt extends Machine {
+  image?: string; // dataURL
+}
 
 export interface EntretienData {
   candidatId: string;
@@ -36,6 +40,7 @@ export interface CandidatExt extends Candidat {
 interface State {
   candidats: CandidatExt[];
   postes: Poste[];
+  machines: MachineExt[];
   entretiens: Record<string, EntretienData>;
   tests: Record<string, TestData>;
   comportements: Record<string, ComportementData>;
@@ -46,6 +51,9 @@ interface State {
   addPoste: (p: Poste) => void;
   updatePoste: (id: string, patch: Partial<Poste>) => void;
   deletePoste: (id: string) => void;
+  addMachine: (m: MachineExt) => void;
+  updateMachine: (id: string, patch: Partial<MachineExt>) => void;
+  deleteMachine: (id: string) => void;
   saveEntretien: (d: EntretienData) => void;
   saveTest: (d: TestData) => void;
   saveComportement: (d: ComportementData) => void;
@@ -66,6 +74,7 @@ export const useCirta = create<State>()(
     (set) => ({
       candidats: seedExt,
       postes: POSTES,
+      machines: MACHINES as MachineExt[],
       entretiens: {},
       tests: {},
       comportements: {},
@@ -76,10 +85,13 @@ export const useCirta = create<State>()(
       addPoste: (p) => set((st) => ({ postes: [p, ...st.postes] })),
       updatePoste: (id, patch) => set((st) => ({ postes: st.postes.map((p) => (p.id === id ? { ...p, ...patch } : p)) })),
       deletePoste: (id) => set((st) => ({ postes: st.postes.filter((p) => p.id !== id) })),
+      addMachine: (m) => set((st) => ({ machines: [m, ...st.machines] })),
+      updateMachine: (id, patch) => set((st) => ({ machines: st.machines.map((m) => (m.id === id ? { ...m, ...patch } : m)) })),
+      deleteMachine: (id) => set((st) => ({ machines: st.machines.filter((m) => m.id !== id) })),
       saveEntretien: (d) => set((st) => ({ entretiens: { ...st.entretiens, [d.candidatId]: d } })),
       saveTest: (d) => set((st) => ({ tests: { ...st.tests, [d.candidatId]: d } })),
       saveComportement: (d) => set((st) => ({ comportements: { ...st.comportements, [d.candidatId]: d } })),
-      reset: () => set({ candidats: seedExt, postes: POSTES, entretiens: {}, tests: {}, comportements: {} }),
+      reset: () => set({ candidats: seedExt, postes: POSTES, machines: MACHINES as MachineExt[], entretiens: {}, tests: {}, comportements: {} }),
     }),
     { name: "cirta-store-v1" },
   ),
