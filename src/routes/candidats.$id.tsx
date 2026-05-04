@@ -118,6 +118,53 @@ function FicheCandidat() {
         </Card>
 
         <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between text-base">
+              <span>Profil industriel détaillé</span>
+              <Badge variant="outline" className={risqueCls(sc.risque)}>
+                <AlertTriangle className="mr-1 h-3 w-3" /> Risque {sc.risque}
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+              {[
+                { l: "Technique", v: sc.technique },
+                { l: "Terrain", v: sc.terrain },
+                { l: "Autonomie", v: sc.autonomie },
+                { l: "Comportement", v: entretien?.analyse ? Math.round((sc.comportement + (compt?.scoreGlobal ?? sc.comportement)) / 2) : sc.comportement },
+              ].map((r) => (
+                <div key={r.l} className="rounded border border-border p-3">
+                  <div className="text-xs uppercase text-muted-foreground">{r.l}</div>
+                  <div className="text-2xl font-bold">{r.v}<span className="text-xs text-muted-foreground">/100</span></div>
+                  <Progress value={r.v} className="mt-1 h-1.5" />
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 rounded border border-border p-3">
+              <div className="mb-1 flex items-center justify-between text-xs">
+                <span className="font-semibold uppercase">Capacité opérationnelle atelier</span>
+                <span className="font-bold">{sc.readinessAtelier}%</span>
+              </div>
+              <Progress value={sc.readinessAtelier} className="h-2" />
+              {sc.matchMachines.req.length > 0 && (
+                <div className="mt-2 text-xs text-muted-foreground">
+                  Machines requises : {sc.matchMachines.req.join(", ")} — maîtrisées : {sc.matchMachines.matched.join(", ") || "aucune"}
+                </div>
+              )}
+            </div>
+            {entretien?.analyse?.risqueSurevaluation && (
+              <div className="mt-3 rounded border border-warning/30 bg-warning/10 p-3 text-xs">
+                <div className="font-bold text-warning uppercase">⚠️ Risque surévaluation : {entretien.analyse.risqueSurevaluation}</div>
+                {entretien.analyse.incoherences && entretien.analyse.incoherences.length > 0 && (
+                  <ul className="mt-1 list-inside list-disc">{entretien.analyse.incoherences.map((x, i) => <li key={i}>{x}</li>)}</ul>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="lg:col-span-2">
           <CardHeader><CardTitle className="text-base">Analyse IA détaillée</CardTitle></CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -138,6 +185,32 @@ function FicheCandidat() {
                 <div><span className="text-muted-foreground">Expérience min :</span> {poste.experienceMin} ans — Diplôme : {poste.diplome}</div>
               </div>
             )}
+          </CardContent>
+        </Card>
+
+        <Card className="lg:col-span-2">
+          <CardHeader><CardTitle className="flex items-center gap-2 text-base"><Tag className="h-4 w-4" /> Tags & qualification</CardTitle></CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {(Object.keys(TAG_LABELS) as CandidatTag[]).map((t) => {
+                const active = candidat.tags?.includes(t);
+                return (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => {
+                      const cur = candidat.tags ?? [];
+                      const next = active ? cur.filter((x) => x !== t) : [...cur, t];
+                      updateCandidat(candidat.id, { tags: next });
+                      toast.success(active ? "Tag retiré" : "Tag ajouté");
+                    }}
+                    className={`rounded-full border px-3 py-1 text-xs transition ${active ? TAG_LABELS[t].cls : "border-border text-muted-foreground hover:bg-accent"}`}
+                  >
+                    {TAG_LABELS[t].label}
+                  </button>
+                );
+              })}
+            </div>
           </CardContent>
         </Card>
 
