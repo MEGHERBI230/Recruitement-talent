@@ -17,11 +17,11 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Plus, Search, Pencil, Trash2 } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, X } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { BU_LABELS, BU_COLORS, PRIORITY_LABELS, BU, Priority, Poste } from "@/data/cirta";
+import { BU_LABELS, BU_COLORS, PRIORITY_LABELS, BU, Priority, Poste, MACHINES } from "@/data/cirta";
 import { useCirta } from "@/store/useCirta";
 import { toast } from "sonner";
 
@@ -29,12 +29,12 @@ export const Route = createFileRoute("/postes")({ component: PostesPage });
 
 interface FormState {
   intitule: string; bu: BU; quantite: number; priorite: Priority;
-  experienceMin: number; diplome: string; competences: string; machines: string;
+  experienceMin: number; diplome: string; competences: string; machines: string[];
 }
 
 const EMPTY: FormState = {
   intitule: "", bu: "BU1", quantite: 1, priorite: "prioritaire",
-  experienceMin: 1, diplome: "TS", competences: "", machines: "",
+  experienceMin: 1, diplome: "TS", competences: "", machines: [],
 };
 
 function PostesPage() {
@@ -65,7 +65,7 @@ function PostesPage() {
     setForm({
       intitule: p.intitule, bu: p.bu, quantite: p.quantite, priorite: p.priorite,
       experienceMin: p.experienceMin, diplome: p.diplome,
-      competences: p.competences.join(", "), machines: p.machines.join(", "),
+      competences: p.competences.join(", "), machines: [...p.machines],
     });
     setOpen(true);
   };
@@ -73,7 +73,7 @@ function PostesPage() {
   const submit = () => {
     if (!form.intitule.trim()) { toast.error("L'intitulé est requis"); return; }
     const competences = form.competences.split(",").map((s) => s.trim()).filter(Boolean);
-    const machines = form.machines.split(",").map((s) => s.trim()).filter(Boolean);
+    const machines = form.machines.filter(Boolean);
     if (editId) {
       updatePoste(editId, { ...form, competences, machines });
       toast.success("Poste modifié");
@@ -83,6 +83,10 @@ function PostesPage() {
     }
     setOpen(false);
   };
+
+  const addMachineSlot = () => setForm((f) => ({ ...f, machines: [...f.machines, ""] }));
+  const setMachineAt = (i: number, v: string) => setForm((f) => ({ ...f, machines: f.machines.map((m, idx) => (idx === i ? v : m)) }));
+  const removeMachineAt = (i: number) => setForm((f) => ({ ...f, machines: f.machines.filter((_, idx) => idx !== i) }));
 
   const confirmDelete = () => {
     if (delId) {
@@ -193,7 +197,32 @@ function PostesPage() {
               </Select>
             </div>
             <div className="col-span-2"><Label>Compétences clés (séparées par virgules)</Label><Textarea rows={2} value={form.competences} onChange={(e) => setForm({ ...form, competences: e.target.value })} /></div>
-            <div className="col-span-2"><Label>Machines liées (séparées par virgules)</Label><Textarea rows={2} value={form.machines} onChange={(e) => setForm({ ...form, machines: e.target.value })} /></div>
+            <div className="col-span-2">
+              <Label>Machines liées</Label>
+              <div className="space-y-2">
+                {form.machines.length === 0 && (
+                  <p className="text-xs text-muted-foreground">Aucune machine. Cliquez sur "Ajouter une machine" pour en associer.</p>
+                )}
+                {form.machines.map((m, i) => (
+                  <div key={i} className="flex gap-2">
+                    <Select value={m} onValueChange={(v) => setMachineAt(i, v)}>
+                      <SelectTrigger className="flex-1"><SelectValue placeholder="Choisir une machine..." /></SelectTrigger>
+                      <SelectContent>
+                        {MACHINES.filter((mc) => mc.bu === form.bu || mc.bu === "TRANSV").map((mc) => (
+                          <SelectItem key={mc.id} value={mc.nom} disabled={form.machines.includes(mc.nom) && mc.nom !== m}>
+                            {mc.nom}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button type="button" variant="ghost" size="icon" onClick={() => removeMachineAt(i)}><X className="h-4 w-4" /></Button>
+                  </div>
+                ))}
+                <Button type="button" variant="outline" size="sm" onClick={addMachineSlot}>
+                  <Plus className="mr-2 h-4 w-4" /> Ajouter une machine
+                </Button>
+              </div>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>Annuler</Button>
