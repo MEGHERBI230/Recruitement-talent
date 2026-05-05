@@ -14,6 +14,7 @@ import { Letterhead, LetterheadFooter } from "@/components/Letterhead";
 import { useCirta, EVAL_LABELS, type EvaluationData, type EvaluationType, type EvalNote } from "@/store/useCirta";
 import { POSTES } from "@/data/cirta";
 import { runAI, type AIProvider } from "@/lib/ai-client";
+import { Cloud, HardDrive } from "lucide-react";
 import { Sparkles, Plus, Printer, Loader2, Save, Trash2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { printPage } from "@/lib/print";
@@ -50,7 +51,7 @@ function EvaluationsPage() {
   const activeCandidat = active ? candidats.find((c) => c.id === active.candidatId) : null;
   const activePoste = activeCandidat ? POSTES.find((p) => p.intitule === activeCandidat.posteVise) : null;
 
-  const launchEval = async () => {
+  const launchEval = async (provider: AIProvider = "auto") => {
     if (!form.candidatId) { toast.error("Sélectionnez un collaborateur"); return; }
     const c = candidats.find((x) => x.id === form.candidatId);
     if (!c) return;
@@ -73,7 +74,7 @@ function EvaluationsPage() {
         type: form.type,
         date: new Date().toISOString(),
         questions: res.questions,
-        notes: res.questions.map((q, i) => ({ idx: i, note: 0, commentaire: "" })),
+        notes: res.questions.map((_q: any, i: number) => ({ idx: i, note: 0, commentaire: "" })),
         observationsTerrain: "",
       };
       addEvaluation(evalData);
@@ -93,7 +94,7 @@ function EvaluationsPage() {
     updateEvaluation(active.id, { notes });
   };
 
-  const analyser = async () => {
+  const analyser = async (provider: AIProvider = "auto") => {
     if (!active || !activeCandidat) return;
     setAnalyzing(true);
     try {

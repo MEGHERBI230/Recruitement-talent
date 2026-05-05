@@ -10,6 +10,7 @@ import { Letterhead, LetterheadFooter } from "@/components/Letterhead";
 import { useCirta, type TestData } from "@/store/useCirta";
 import { POSTES } from "@/data/cirta";
 import { runAI, type AIProvider } from "@/lib/ai-client";
+import { Cloud, HardDrive } from "lucide-react";
 import { ArrowLeft, Sparkles, Printer, Save, Loader2, RotateCcw, Camera, Upload, X, ScanLine } from "lucide-react";
 import { toast } from "sonner";
 import { printPage } from "@/lib/print";
@@ -36,7 +37,7 @@ function TestPage() {
   if (!candidat) return <div className="p-6">Candidat introuvable</div>;
   const poste = POSTES.find((p) => p.intitule === candidat.posteVise);
 
-  const generer = async () => {
+  const generer = async (provider: AIProvider = "auto") => {
     setLoading(true);
     try {
       const res = await runAI("generatePracticalTest", { poste: candidat.posteVise, bu: candidat.bu, machines: poste?.machines, competences: poste?.competences }, { provider });
@@ -55,7 +56,7 @@ function TestPage() {
 
   const sauver = () => { save({ candidatId: id, observations, photos, scanReponses: scan }); toast.success("Enregistré"); };
 
-  const analyser = async () => {
+  const analyser = async (provider: AIProvider = "auto") => {
     if (!data?.test) return;
     setAnalyzing(true);
     try {
@@ -87,7 +88,7 @@ function TestPage() {
           <CardContent className="p-8 text-center">
             <Sparkles className="mx-auto mb-3 h-10 w-10 text-primary" />
             <p className="mb-4 text-sm text-muted-foreground">Génère un test pratique adapté au poste, aux machines et aux compétences requises.</p>
-            <Button size="lg" onClick={generer} disabled={loading}>{loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />} Générer le test pratique</Button>
+            <div className="flex flex-wrap justify-center gap-2"><Button size="lg" onClick={() => generer("auto")} disabled={loading}>{loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <HardDrive className="mr-2 h-4 w-4" />} Générer (IA locale)</Button><Button size="lg" variant="outline" onClick={() => generer("cloud")} disabled={loading}><Cloud className="mr-2 h-4 w-4" /> IA avancée (cloud)</Button></div>
           </CardContent>
         </Card>
       )}
@@ -152,10 +153,7 @@ function TestPage() {
               </div>
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={sauver}><Save className="mr-2 h-4 w-4" /> Enregistrer</Button>
-                <Button onClick={analyser} disabled={analyzing}>
-                  {analyzing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ScanLine className="mr-2 h-4 w-4" />}
-                  Analyser avec l'IA
-                </Button>
+                <Button onClick={() => analyser("auto")} disabled={analyzing}>{analyzing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <HardDrive className="mr-2 h-4 w-4" />} Analyser (local)</Button><Button variant="outline" onClick={() => analyser("cloud")} disabled={analyzing}><Cloud className="mr-2 h-4 w-4" /> IA avancée (cloud)</Button>
               </div>
             </CardContent>
           </Card>
