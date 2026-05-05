@@ -74,6 +74,112 @@ export interface UserProfile {
 
 export const DEFAULT_WEIGHTS: ScoreWeights = { competences: 40, experience: 25, diplome: 15, machines: 20 };
 
+// ============== PERSONNEL ==============
+export type ContratType = "CDI" | "CDD" | "Intérim" | "Stage" | "Apprentissage";
+export type SituationFam = "Célibataire" | "Marié(e)" | "Divorcé(e)" | "Veuf(ve)";
+
+export interface PosteEmploye {
+  id: string;
+  intituleposte: string;
+  departement?: string;
+  responsable?: string;
+  lieuTravail?: string;
+  typeContrat: ContratType;
+  dateEmbauche: string;
+  dateFinContrat?: string;
+  salaireBrut?: number;
+  modePaiement?: string;
+  rib?: string;
+  banque?: string;
+  avantages?: string;
+  estActuel: boolean;
+  dateCreation: string;
+}
+export interface PeriodeEssai {
+  dateDebut: string;
+  dateFin: string;
+  dureeMois: number;
+  statut: "En cours" | "Validée" | "Non validée" | "Prolongée";
+  dateDecision?: string;
+  notes?: string;
+  decisionMotivation?: string;
+  noteTechnique?: number;
+  noteIntegration?: number;
+  noteConsignes?: number;
+}
+export type AssiduiteType = "Présence" | "Absence" | "Retard" | "Congé annuel" | "Congé maladie" | "Autre";
+export interface Assiduite {
+  id: string;
+  dateDebut: string;
+  dateFin?: string;
+  type: AssiduiteType;
+  justifie: boolean;
+  note?: string;
+  dateSaisie: string;
+}
+export type ObservationType = "Félicitation" | "Avertissement" | "Observation" | "Sanction" | "Réalisation" | "Incident";
+export interface Observation {
+  id: string;
+  dateObs: string;
+  type: ObservationType;
+  description: string;
+  auteur?: string;
+  dateSaisie: string;
+}
+export interface DocumentEmploye {
+  id: string;
+  nomDocument: string;
+  typeDocument: "Contrat" | "Diplôme" | "CIN" | "Autre";
+  fichier: string; // dataURL
+  tailleKo: number;
+  dateAjout: string;
+}
+export interface HistoriqueSalaire {
+  id: string;
+  salaireBrut: number;
+  motif: "Embauche" | "Avancement" | "Promotion" | "Révision";
+  dateEffet: string;
+}
+export interface AnalyseEmployeIA {
+  date: string;
+  synthese: string;
+  pointsForts: string[];
+  pointsAmeliorer: string[];
+  recommandation: string;
+  scoreGlobal: number;
+}
+export interface Employe {
+  id: string;
+  // identité
+  nom: string;
+  prenom: string;
+  dateNaissance?: string;
+  lieuNaissance?: string;
+  cin?: string;
+  nss?: string;
+  telephone?: string;
+  email?: string;
+  adresse?: string;
+  situationFamiliale?: SituationFam;
+  nbEnfants?: number;
+  niveauEtudes?: string;
+  specialite?: string;
+  diplomes?: string;
+  photo?: string; // dataURL
+  // organisation
+  postes: PosteEmploye[];
+  periodeEssai?: PeriodeEssai;
+  assiduites: Assiduite[];
+  observations: Observation[];
+  documents: DocumentEmploye[];
+  historiqueSalaires: HistoriqueSalaire[];
+  // meta
+  dateCreation: string;
+  actif: boolean;
+  candidatOriginId?: string;
+  derniereAnalyseIA?: AnalyseEmployeIA;
+}
+
 export type EvaluationType = "periode_essai" | "renouvellement_cdd" | "cdd_to_cdi";
 
 export interface EvalQuestion { question: string; objectif: string; categorie: string; bareme: number }
