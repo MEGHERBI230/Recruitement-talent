@@ -185,7 +185,7 @@ function EvaluationsPage() {
               <h2 className="text-lg font-semibold">{EVAL_LABELS[active.type]} — {activeCandidat.prenom} {activeCandidat.nom}</h2>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={analyser} disabled={analyzing}>
+              <Button variant="outline" onClick={() => analyser()} disabled={analyzing}>
                 {analyzing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                 Analyser (IA)
               </Button>
@@ -300,7 +300,7 @@ function EvaluationsPage() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpenNew(false)}>Annuler</Button>
-            <Button onClick={launchEval} disabled={genLoading}>
+            <Button onClick={() => launchEval()} disabled={genLoading}>
               {genLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
               Générer la grille (IA)
             </Button>

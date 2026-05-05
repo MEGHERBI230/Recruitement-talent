@@ -66,7 +66,7 @@ function ComptPage() {
         <Button variant="ghost" size="sm" asChild><Link to="/candidats/$id" params={{ id }}><ArrowLeft className="mr-2 h-4 w-4" /> Fiche candidat</Link></Button>
         <div className="flex gap-2">
           {data?.questions && <Button variant="outline" onClick={printPage}><Printer className="mr-2 h-4 w-4" /> Imprimer</Button>}
-          {data?.questions && <Button variant="outline" onClick={generer} disabled={loading}><RotateCcw className="mr-2 h-4 w-4" /> Régénérer</Button>}
+          {data?.questions && <Button variant="outline" onClick={() => generer()} disabled={loading}><RotateCcw className="mr-2 h-4 w-4" /> Régénérer</Button>}
         </div>
       </div>
 
