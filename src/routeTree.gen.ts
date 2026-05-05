@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UtilisateursRouteImport } from './routes/utilisateurs'
+import { Route as UtilisateursRouteImport } from './routes/utilisateurs'
 import { Route as RedemarrageRouteImport } from './routes/redemarrage'
 import { Route as PostesRouteImport } from './routes/postes'
 import { Route as ParametresRouteImport } from './routes/parametres'
