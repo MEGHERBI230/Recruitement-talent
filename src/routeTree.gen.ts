@@ -133,7 +133,6 @@ export interface FileRoutesByFullPath {
   '/postes': typeof PostesRoute
   '/redemarrage': typeof RedemarrageRoute
   '/utilisateurs': typeof UtilisateursRoute
-  '/utilisateurs': typeof UtilisateursRoute
   '/candidats/$id': typeof CandidatsIdRoute
   '/comportement/$id': typeof ComportementIdRoute
   '/entretiens/$id': typeof EntretiensIdRoute
@@ -154,7 +153,6 @@ export interface FileRoutesByTo {
   '/parametres': typeof ParametresRoute
   '/postes': typeof PostesRoute
   '/redemarrage': typeof RedemarrageRoute
-  '/utilisateurs': typeof UtilisateursRoute
   '/utilisateurs': typeof UtilisateursRoute
   '/candidats/$id': typeof CandidatsIdRoute
   '/comportement/$id': typeof ComportementIdRoute
@@ -177,7 +175,6 @@ export interface FileRoutesById {
   '/parametres': typeof ParametresRoute
   '/postes': typeof PostesRoute
   '/redemarrage': typeof RedemarrageRoute
-  '/utilisateurs': typeof UtilisateursRoute
   '/utilisateurs': typeof UtilisateursRoute
   '/candidats/$id': typeof CandidatsIdRoute
   '/comportement/$id': typeof ComportementIdRoute
@@ -202,7 +199,6 @@ export interface FileRouteTypes {
     | '/postes'
     | '/redemarrage'
     | '/utilisateurs'
-    | '/utilisateurs'
     | '/candidats/$id'
     | '/comportement/$id'
     | '/entretiens/$id'
@@ -223,7 +219,6 @@ export interface FileRouteTypes {
     | '/parametres'
     | '/postes'
     | '/redemarrage'
-    | '/utilisateurs'
     | '/utilisateurs'
     | '/candidats/$id'
     | '/comportement/$id'
@@ -246,7 +241,6 @@ export interface FileRouteTypes {
     | '/postes'
     | '/redemarrage'
     | '/utilisateurs'
-    | '/utilisateurs'
     | '/candidats/$id'
     | '/comportement/$id'
     | '/entretiens/$id'
@@ -268,7 +262,6 @@ export interface RootRouteChildren {
   ParametresRoute: typeof ParametresRoute
   PostesRoute: typeof PostesRoute
   RedemarrageRoute: typeof RedemarrageRoute
-  UtilisateursRoute: typeof UtilisateursRoute
   UtilisateursRoute: typeof UtilisateursRoute
   CandidatsIdRoute: typeof CandidatsIdRoute
   ComportementIdRoute: typeof ComportementIdRoute
@@ -298,13 +291,6 @@ declare module '@tanstack/react-router' {
       path: '/redemarrage'
       fullPath: '/redemarrage'
       preLoaderRoute: typeof RedemarrageRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/utilisateurs': {
-      id: '/utilisateurs'
-      path: '/utilisateurs'
-      fullPath: '/utilisateurs'
-      preLoaderRoute: typeof UtilisateursRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/postes': {
@@ -436,7 +422,6 @@ const rootRouteChildren: RootRouteChildren = {
   ParametresRoute: ParametresRoute,
   PostesRoute: PostesRoute,
   RedemarrageRoute: RedemarrageRoute,
-  UtilisateursRoute: UtilisateursRoute,
   UtilisateursRoute: UtilisateursRoute,
   CandidatsIdRoute: CandidatsIdRoute,
   ComportementIdRoute: ComportementIdRoute,
