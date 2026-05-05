@@ -133,6 +133,81 @@ function Parametres() {
           </CardContent>
         </Card>
 
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <HardDrive className="h-4 w-4" /> IA hybride — Local (Ollama) par défaut, Cloud sur demande
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-xs text-muted-foreground">
+              L'IA <b>locale (Ollama)</b> est utilisée par défaut pour toutes les tâches : analyse CV, génération de questionnaires, scoring, analyse d'entretien, génération de tests.
+              L'IA <b>Cloud (Lovable AI)</b> n'est utilisée que sur clic explicite du bouton « IA avancée » ou en fallback si Ollama est indisponible.
+            </p>
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+              <div>
+                <Label>URL Ollama</Label>
+                <Input value={ai.ollamaUrl} onChange={(e) => setAi({ ...ai, ollamaUrl: e.target.value })} placeholder="http://localhost:11434" />
+              </div>
+              <div>
+                <Label>Modèle local</Label>
+                <Input value={ai.ollamaModel} onChange={(e) => setAi({ ...ai, ollamaModel: e.target.value })} placeholder="llama3.1, mistral, qwen2.5..." />
+              </div>
+            </div>
+            <div className="flex items-center justify-between rounded border border-border p-3">
+              <div>
+                <div className="text-sm font-medium">IA locale par défaut</div>
+                <p className="text-xs text-muted-foreground">Toutes les tâches standard utilisent Ollama (gratuit, confidentiel, hors ligne).</p>
+              </div>
+              <Switch checked={ai.preferLocal} onCheckedChange={(v) => setAi({ ...ai, preferLocal: v })} />
+            </div>
+            <div className="flex items-center justify-between rounded border border-border p-3">
+              <div>
+                <div className="text-sm font-medium">Fallback cloud automatique</div>
+                <p className="text-xs text-muted-foreground">Si Ollama échoue, bascule sur l'IA cloud. Désactivez pour zéro consommation involontaire.</p>
+              </div>
+              <Switch checked={ai.fallbackToCloud} onCheckedChange={(v) => setAi({ ...ai, fallbackToCloud: v })} />
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button variant="outline" onClick={testOllama} disabled={pingState.loading}>
+                {pingState.loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <HardDrive className="mr-2 h-4 w-4" />}
+                Tester la connexion Ollama
+              </Button>
+              {pingState.ok === true && (
+                <span className="inline-flex items-center gap-1 text-xs text-success"><CheckCircle2 className="h-3.5 w-3.5" /> Joignable — {pingState.models?.length ?? 0} modèle(s){pingState.models && pingState.models.length > 0 ? ` : ${pingState.models.slice(0, 3).join(", ")}` : ""}</span>
+              )}
+              {pingState.ok === false && (
+                <span className="inline-flex items-center gap-1 text-xs text-destructive"><XCircle className="h-3.5 w-3.5" /> {pingState.error}</span>
+              )}
+              <div className="flex-1" />
+              <Button onClick={saveAI}><Save className="mr-2 h-4 w-4" /> Enregistrer config IA</Button>
+            </div>
+            <div className="rounded border border-info/30 bg-info/5 p-3 text-xs">
+              <div className="font-bold uppercase text-info mb-1">Installation Ollama (rappel)</div>
+              <ol className="list-inside list-decimal space-y-0.5 text-muted-foreground">
+                <li>Télécharger sur <code>ollama.com/download</code> puis lancer <code>ollama serve</code></li>
+                <li>Installer un modèle : <code>ollama pull {ai.ollamaModel}</code></li>
+                <li>Cliquer « Tester la connexion » ci-dessus</li>
+              </ol>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Cloud className="h-4 w-4" /> Indicateur de consommation IA
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <AIUsageBadge />
+            <p className="text-xs text-muted-foreground">Local = gratuit, confidentiel. Cloud = consomme des crédits Lovable AI.</p>
+            <Button variant="outline" size="sm" onClick={() => { resetAIUsage(); toast.success("Compteur remis à zéro"); }}>
+              <RotateCcw className="mr-2 h-4 w-4" /> Remettre à zéro
+            </Button>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader><CardTitle className="text-base">Entreprise</CardTitle></CardHeader>
           <CardContent className="space-y-1 text-sm">
