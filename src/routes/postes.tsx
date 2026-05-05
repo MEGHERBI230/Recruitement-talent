@@ -24,6 +24,8 @@ import {
 import { BU_LABELS, BU_COLORS, PRIORITY_LABELS, BU, Priority, Poste, MACHINES } from "@/data/cirta";
 import { useCirta } from "@/store/useCirta";
 import { toast } from "sonner";
+import { ImportButton } from "@/components/ImportButton";
+import { importPostes } from "@/lib/import-xlsx";
 
 export const Route = createFileRoute("/postes")({ component: PostesPage });
 
@@ -112,7 +114,17 @@ function PostesPage() {
       <PageHeader
         title="Postes"
         subtitle={`${postes.length} intitulés — ${postes.reduce((s, p) => s + p.quantite, 0)} postes à pourvoir`}
-        actions={<Button onClick={openNew}><Plus className="mr-2 h-4 w-4" /> Ajouter un poste</Button>}
+        actions={
+          <>
+            <ImportButton onFile={async (f) => {
+              const { result, postes: imported } = await importPostes(f);
+              imported.forEach((p) => addPoste(p));
+              toast.success(`${result.added} poste(s) importé(s)${result.skipped ? `, ${result.skipped} ignoré(s)` : ""}`);
+              result.errors.slice(0, 3).forEach((e) => toast.error(e));
+            }} label="Importer postes" />
+            <Button onClick={openNew}><Plus className="mr-2 h-4 w-4" /> Ajouter un poste</Button>
+          </>
+        }
       />
 
       <Card className="mb-4">

@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { printPage } from "@/lib/print";
+import { ImportButton } from "@/components/ImportButton";
+import { importPersonnel } from "@/lib/import-xlsx";
 
 export const Route = createFileRoute("/personnel/")({ component: PersonnelList });
 

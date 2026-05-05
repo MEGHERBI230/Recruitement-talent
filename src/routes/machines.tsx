@@ -24,6 +24,8 @@ import { BU_LABELS, BU_COLORS, BU } from "@/data/cirta";
 import { useCirta, MachineExt } from "@/store/useCirta";
 import { extractMachinePlate } from "@/server/ocr.functions";
 import { toast } from "sonner";
+import { ImportButton } from "@/components/ImportButton";
+import { importMachines } from "@/lib/import-xlsx";
 
 export const Route = createFileRoute("/machines")({ component: MachinesPage });
 
@@ -136,7 +138,17 @@ function MachinesPage() {
       <PageHeader
         title="Parc machines"
         subtitle={`${machines.length} équipements industriels`}
-        actions={<Button onClick={openNew}><Plus className="mr-2 h-4 w-4" /> Ajouter machine</Button>}
+        actions={
+          <>
+            <ImportButton onFile={async (f) => {
+              const { result, machines: imported } = await importMachines(f);
+              imported.forEach((m) => addMachine(m));
+              toast.success(`${result.added} machine(s) importée(s)${result.skipped ? `, ${result.skipped} ignorée(s)` : ""}`);
+              result.errors.slice(0, 3).forEach((e) => toast.error(e));
+            }} label="Importer machines" />
+            <Button onClick={openNew}><Plus className="mr-2 h-4 w-4" /> Ajouter machine</Button>
+          </>
+        }
       />
 
       <Card className="mb-4">
