@@ -330,6 +330,7 @@ export const useCirta = create<State>()(
       employes: [],
       user: defaultUser,
       auth: { isLoggedIn: false, displayName: "" },
+      users: [ADMIN_SEED],
       aiSettings: DEFAULT_AI_SETTINGS,
       aiUsage: { local: 0, cloud: 0, lastReset: new Date().toISOString() },
       setStatut: (id, s) => set((st) => ({ candidats: st.candidats.map((c) => (c.id === id ? { ...c, statut: s } : c)) })),
