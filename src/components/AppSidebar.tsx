@@ -11,6 +11,7 @@ import {
   Settings,
   Factory,
   ShieldCheck,
+  UserCog,
 } from "lucide-react";
 import {
   Sidebar,
@@ -34,6 +35,7 @@ const items = [
   { title: "Tests pratiques", url: "/tests", icon: ClipboardCheck },
   { title: "Test comportemental", url: "/comportement", icon: FlaskConical },
   { title: "Évaluations RH", url: "/evaluations", icon: ShieldCheck },
+  { title: "Personnel", url: "/personnel", icon: UserCog },
   { title: "Rapports", url: "/rapports", icon: FileBarChart },
   { title: "Redémarrage usine", url: "/redemarrage", icon: Factory },
   { title: "Paramètres", url: "/parametres", icon: Settings },
