@@ -1,19 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Upload, Search, Sparkles, Plus } from "lucide-react";
+import { Upload, Search, Sparkles, Plus, Loader2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { STATUT_LABELS, BU_COLORS, POSTES, BU } from "@/data/cirta";
+import { STATUT_LABELS, BU_COLORS, POSTES } from "@/data/cirta";
 import { useCirta } from "@/store/useCirta";
 import { scoreCandidat } from "@/lib/scoring";
+import { importCVFile } from "@/lib/cv-parser";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/candidats/")({ component: CandidatsPage });
@@ -37,7 +38,39 @@ function CandidatsPage() {
   const weights = useCirta((s) => s.user.weights);
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({ nom: "", prenom: "", posteVise: POSTES[0].intitule, experience: 0, diplome: "TS", competences: "", machines: "" });
+
+  const onFiles = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setImporting(true);
+    let ok = 0, ko = 0;
+    for (const file of Array.from(files)) {
+      try {
+        const cv = await importCVFile(file);
+        const posteVise = form.posteVise || POSTES[0].intitule;
+        const poste = POSTES.find((p) => p.intitule === posteVise)!;
+        const sc = scoreCandidat({ experience: cv.experience, diplome: cv.diplome, competences: cv.competences, machinesMaitrisees: cv.machines, posteVise }, weights);
+        addCandidat({
+          id: `c${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+          nom: cv.nom || file.name.replace(/\.[^.]+$/, ""),
+          prenom: cv.prenom || "",
+          posteVise, experience: cv.experience, diplome: cv.diplome, score: sc.total, statut: "analyse",
+          bu: poste.bu, competences: cv.competences, machinesMaitrisees: cv.machines,
+          email: cv.email, telephone: cv.telephone, ville: "",
+        });
+        ok++;
+      } catch (e: any) {
+        console.error("Import CV échec:", file.name, e);
+        ko++;
+      }
+    }
+    setImporting(false);
+    if (fileRef.current) fileRef.current.value = "";
+    if (ok) toast.success(`${ok} CV importé(s) et analysé(s)`);
+    if (ko) toast.error(`${ko} fichier(s) non lus (format non supporté ou illisible)`);
+  };
 
   const filtered = candidats.filter((c) => q === "" || `${c.prenom} ${c.nom} ${c.posteVise}`.toLowerCase().includes(q.toLowerCase()));
 
@@ -108,8 +141,10 @@ function CandidatsPage() {
                 </DialogFooter>
               </DialogContent>
             </Dialog>
-            <Button variant="outline" onClick={() => toast.info("Import CV PDF disponible en V2")}>
-              <Upload className="mr-2 h-4 w-4" /> Importer CV
+            <input ref={fileRef} type="file" accept=".pdf,.docx,.txt,application/pdf,text/plain" multiple className="hidden" onChange={(e) => onFiles(e.target.files)} />
+            <Button variant="outline" disabled={importing} onClick={() => fileRef.current?.click()}>
+              {importing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+              {importing ? "Import en cours..." : "Importer CV"}
             </Button>
           </>
         }
