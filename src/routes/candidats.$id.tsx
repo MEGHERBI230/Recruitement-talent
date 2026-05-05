@@ -8,8 +8,9 @@ import { useCirta, type CandidatTag } from "@/store/useCirta";
 import { scoreCandidat, recoCls, risqueCls } from "@/lib/scoring";
 import { STATUT_LABELS, BU_LABELS, BU_COLORS, POSTES, CandidatStatut } from "@/data/cirta";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Sparkles, FileText, ClipboardCheck, FlaskConical, Users, Printer, CheckCircle2, XCircle, AlertTriangle, Tag } from "lucide-react";
+import { ArrowLeft, Sparkles, FileText, ClipboardCheck, FlaskConical, Users, Printer, CheckCircle2, XCircle, AlertTriangle, Tag, UserPlus } from "lucide-react";
 import { toast } from "sonner";
+import { useNavigate } from "@tanstack/react-router";
 
 const TAG_LABELS: Record<CandidatTag, { label: string; cls: string }> = {
   urgent: { label: "Urgent", cls: "bg-destructive/10 text-destructive border-destructive/30" },
@@ -32,6 +33,8 @@ function FicheCandidat() {
   const entretien = useCirta((s) => s.entretiens[id]);
   const test = useCirta((s) => s.tests[id]);
   const compt = useCirta((s) => s.comportements[id]);
+  const employeFromCandidat = useCirta((s) => s.employeFromCandidat);
+  const navigate = useNavigate();
 
   if (!candidat) {
     return (
@@ -115,6 +118,14 @@ function FicheCandidat() {
                 <XCircle className="mr-2 h-4 w-4 text-destructive" /> Rejeter
               </Button>
             </div>
+            {candidat.statut === "accepte" && (
+              <Button className="w-full" onClick={() => {
+                const newId = employeFromCandidat(candidat.id);
+                if (newId) { toast.success("Fiche employé créée"); navigate({ to: "/personnel/$id", params: { id: newId } }); }
+              }}>
+                <UserPlus className="mr-2 h-4 w-4" /> Recruter → créer fiche employé
+              </Button>
+            )}
           </CardContent>
         </Card>
 

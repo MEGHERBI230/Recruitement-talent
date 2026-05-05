@@ -12,6 +12,7 @@ import {
   planRestart,
   generateRhEvaluation,
   analyzeRhEvaluation,
+  analyzeEmploye,
 } from "@/server/ai.functions";
 
 export type AITask =
@@ -23,7 +24,8 @@ export type AITask =
   | "analyzeBehavior"
   | "planRestart"
   | "generateRhEvaluation"
-  | "analyzeRhEvaluation";
+  | "analyzeRhEvaluation"
+  | "analyzeEmploye";
 
 export type AIProvider = "local" | "cloud" | "auto";
 
@@ -37,6 +39,7 @@ const CLOUD_FN: Record<AITask, (args: any) => Promise<any>> = {
   planRestart: (data) => planRestart({ data }),
   generateRhEvaluation: (data) => generateRhEvaluation({ data }),
   analyzeRhEvaluation: (data) => analyzeRhEvaluation({ data }),
+  analyzeEmploye: (data) => analyzeEmploye({ data }),
 };
 
 // === Prompts spécifiques par tâche ===
@@ -96,7 +99,14 @@ function buildPrompt(task: AITask, data: any): { system: string; user: string; s
         user: `Évaluation : ${data.type} — Poste : ${data.poste}\nNotes:\n${data.items.map((it: any, i: number) => `${i + 1}. ${it.question} — ${it.note}/${it.bareme} — ${it.commentaire || "—"}`).join("\n")}\nObs : ${data.observationsTerrain || "(aucune)"}\nRéponds en JSON: {"scoreGlobal":0-100,"verdict":"VALIDÉ|À CONSOLIDER|NON VALIDÉ","forces":[],"axesProgres":[],"decisionRecommandee":"","synthese":""}`,
         schema: {},
       };
+    case "analyzeEmploye":
+      return {
+        system: "DOP CIRTA. Tu analyses un employé sur la base de ses données RH (assiduité, observations, période d'essai, historique).",
+        user: `Employé : ${data.nom} — Poste : ${data.poste}\nAncienneté : ${data.ancienneteMois} mois\nAssiduité : ${data.assiduiteResume}\nObservations : ${data.observationsResume}\nPériode d'essai : ${data.essaiResume}\nRéponds en JSON: {"synthese":"...","pointsForts":[],"pointsAmeliorer":[],"recommandation":"...","scoreGlobal":0-10}`,
+        schema: {},
+      };
   }
+  throw new Error("Tâche IA inconnue");
 }
 
 function extractJSON(text: string): any {

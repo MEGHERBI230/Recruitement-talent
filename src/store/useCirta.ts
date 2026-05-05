@@ -74,6 +74,112 @@ export interface UserProfile {
 
 export const DEFAULT_WEIGHTS: ScoreWeights = { competences: 40, experience: 25, diplome: 15, machines: 20 };
 
+// ============== PERSONNEL ==============
+export type ContratType = "CDI" | "CDD" | "Intérim" | "Stage" | "Apprentissage";
+export type SituationFam = "Célibataire" | "Marié(e)" | "Divorcé(e)" | "Veuf(ve)";
+
+export interface PosteEmploye {
+  id: string;
+  intituleposte: string;
+  departement?: string;
+  responsable?: string;
+  lieuTravail?: string;
+  typeContrat: ContratType;
+  dateEmbauche: string;
+  dateFinContrat?: string;
+  salaireBrut?: number;
+  modePaiement?: string;
+  rib?: string;
+  banque?: string;
+  avantages?: string;
+  estActuel: boolean;
+  dateCreation: string;
+}
+export interface PeriodeEssai {
+  dateDebut: string;
+  dateFin: string;
+  dureeMois: number;
+  statut: "En cours" | "Validée" | "Non validée" | "Prolongée";
+  dateDecision?: string;
+  notes?: string;
+  decisionMotivation?: string;
+  noteTechnique?: number;
+  noteIntegration?: number;
+  noteConsignes?: number;
+}
+export type AssiduiteType = "Présence" | "Absence" | "Retard" | "Congé annuel" | "Congé maladie" | "Autre";
+export interface Assiduite {
+  id: string;
+  dateDebut: string;
+  dateFin?: string;
+  type: AssiduiteType;
+  justifie: boolean;
+  note?: string;
+  dateSaisie: string;
+}
+export type ObservationType = "Félicitation" | "Avertissement" | "Observation" | "Sanction" | "Réalisation" | "Incident";
+export interface Observation {
+  id: string;
+  dateObs: string;
+  type: ObservationType;
+  description: string;
+  auteur?: string;
+  dateSaisie: string;
+}
+export interface DocumentEmploye {
+  id: string;
+  nomDocument: string;
+  typeDocument: "Contrat" | "Diplôme" | "CIN" | "Autre";
+  fichier: string; // dataURL
+  tailleKo: number;
+  dateAjout: string;
+}
+export interface HistoriqueSalaire {
+  id: string;
+  salaireBrut: number;
+  motif: "Embauche" | "Avancement" | "Promotion" | "Révision";
+  dateEffet: string;
+}
+export interface AnalyseEmployeIA {
+  date: string;
+  synthese: string;
+  pointsForts: string[];
+  pointsAmeliorer: string[];
+  recommandation: string;
+  scoreGlobal: number;
+}
+export interface Employe {
+  id: string;
+  // identité
+  nom: string;
+  prenom: string;
+  dateNaissance?: string;
+  lieuNaissance?: string;
+  cin?: string;
+  nss?: string;
+  telephone?: string;
+  email?: string;
+  adresse?: string;
+  situationFamiliale?: SituationFam;
+  nbEnfants?: number;
+  niveauEtudes?: string;
+  specialite?: string;
+  diplomes?: string;
+  photo?: string; // dataURL
+  // organisation
+  postes: PosteEmploye[];
+  periodeEssai?: PeriodeEssai;
+  assiduites: Assiduite[];
+  observations: Observation[];
+  documents: DocumentEmploye[];
+  historiqueSalaires: HistoriqueSalaire[];
+  // meta
+  dateCreation: string;
+  actif: boolean;
+  candidatOriginId?: string;
+  derniereAnalyseIA?: AnalyseEmployeIA;
+}
+
 export type EvaluationType = "periode_essai" | "renouvellement_cdd" | "cdd_to_cdi";
 
 export interface EvalQuestion { question: string; objectif: string; categorie: string; bareme: number }
@@ -131,6 +237,7 @@ interface State {
   tests: Record<string, TestData>;
   comportements: Record<string, ComportementData>;
   evaluations: EvaluationData[];
+  employes: Employe[];
   user: UserProfile;
   auth: AuthState;
   aiSettings: AISettings;
@@ -151,6 +258,10 @@ interface State {
   addEvaluation: (e: EvaluationData) => void;
   updateEvaluation: (id: string, patch: Partial<EvaluationData>) => void;
   deleteEvaluation: (id: string) => void;
+  addEmploye: (e: Employe) => void;
+  updateEmploye: (id: string, patch: Partial<Employe>) => void;
+  desactiverEmploye: (id: string) => void;
+  employeFromCandidat: (candidatId: string) => string | null;
   updateUser: (patch: Partial<UserProfile>) => void;
   login: (displayName: string) => void;
   logout: () => void;
@@ -188,6 +299,7 @@ export const useCirta = create<State>()(
       tests: {},
       comportements: {},
       evaluations: [],
+      employes: [],
       user: defaultUser,
       auth: { isLoggedIn: false, displayName: "" },
       aiSettings: DEFAULT_AI_SETTINGS,
@@ -208,14 +320,59 @@ export const useCirta = create<State>()(
       addEvaluation: (e) => set((st) => ({ evaluations: [e, ...st.evaluations] })),
       updateEvaluation: (id, patch) => set((st) => ({ evaluations: st.evaluations.map((e) => (e.id === id ? { ...e, ...patch } : e)) })),
       deleteEvaluation: (id) => set((st) => ({ evaluations: st.evaluations.filter((e) => e.id !== id) })),
+      addEmploye: (e) => set((st) => ({ employes: [e, ...st.employes] })),
+      updateEmploye: (id, patch) => set((st) => ({ employes: st.employes.map((e) => (e.id === id ? { ...e, ...patch } : e)) })),
+      desactiverEmploye: (id) => set((st) => ({ employes: st.employes.map((e) => (e.id === id ? { ...e, actif: false } : e)) })),
+      employeFromCandidat: (candidatId) => {
+        let newId: string | null = null;
+        set((st) => {
+          const c = st.candidats.find((x) => x.id === candidatId);
+          if (!c) return {};
+          const exists = st.employes.find((e) => e.candidatOriginId === candidatId);
+          if (exists) { newId = exists.id; return {}; }
+          newId = `emp-${Date.now()}`;
+          const today = new Date().toISOString().slice(0, 10);
+          const finEssai = new Date(Date.now() + 90 * 86400000).toISOString().slice(0, 10);
+          const emp: Employe = {
+            id: newId,
+            nom: c.nom,
+            prenom: c.prenom,
+            telephone: c.telephone,
+            email: c.email,
+            adresse: c.ville,
+            niveauEtudes: c.diplome,
+            specialite: c.posteVise,
+            diplomes: c.diplome,
+            postes: [{
+              id: `pos-${Date.now()}`,
+              intituleposte: c.posteVise,
+              departement: c.bu,
+              typeContrat: "CDD",
+              dateEmbauche: today,
+              estActuel: true,
+              dateCreation: today,
+            }],
+            periodeEssai: { dateDebut: today, dateFin: finEssai, dureeMois: 3, statut: "En cours" },
+            assiduites: [],
+            observations: [],
+            documents: [],
+            historiqueSalaires: [],
+            dateCreation: today,
+            actif: true,
+            candidatOriginId: candidatId,
+          };
+          return { employes: [emp, ...st.employes] };
+        });
+        return newId;
+      },
       updateUser: (patch) => set((st) => ({ user: { ...st.user, ...patch } })),
       login: (displayName) => set(() => ({ auth: { isLoggedIn: true, displayName } })),
       logout: () => set(() => ({ auth: { isLoggedIn: false, displayName: "" } })),
       updateAISettings: (patch) => set((st) => ({ aiSettings: { ...st.aiSettings, ...patch } })),
       bumpAIUsage: (provider) => set((st) => ({ aiUsage: { ...st.aiUsage, [provider]: st.aiUsage[provider] + 1 } })),
       resetAIUsage: () => set(() => ({ aiUsage: { local: 0, cloud: 0, lastReset: new Date().toISOString() } })),
-      reset: () => set((st) => ({ candidats: seedExt, postes: POSTES, machines: MACHINES as MachineExt[], entretiens: {}, tests: {}, comportements: {}, evaluations: [], user: defaultUser, aiSettings: st.aiSettings, aiUsage: st.aiUsage })),
+      reset: () => set((st) => ({ candidats: seedExt, postes: POSTES, machines: MACHINES as MachineExt[], entretiens: {}, tests: {}, comportements: {}, evaluations: [], employes: [], user: defaultUser, aiSettings: st.aiSettings, aiUsage: st.aiUsage })),
     }),
-    { name: "cirta-store-v5" },
+    { name: "cirta-store-v6" },
   ),
 );

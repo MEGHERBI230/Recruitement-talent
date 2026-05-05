@@ -487,3 +487,48 @@ Donne : score global /100, verdict (VALIDÉ / À CONSOLIDER / NON VALIDÉ), forc
     });
     return extractToolArgs(j);
   });
+
+// ========== ANALYSE EMPLOYÉ ==========
+export const analyzeEmploye = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => d as {
+    nom: string;
+    poste: string;
+    ancienneteMois: number;
+    assiduiteResume: string;
+    observationsResume: string;
+    essaiResume: string;
+  })
+  .handler(async ({ data }) => {
+    const sys = "Tu es Directeur des Opérations CIRTA AUTOMOTIVE. Tu analyses un employé sur la base de données RH factuelles. Sois ferme, objectif et orienté décision.";
+    const user = `Employé : ${data.nom}
+Poste : ${data.poste}
+Ancienneté : ${data.ancienneteMois} mois
+Assiduité : ${data.assiduiteResume}
+Observations : ${data.observationsResume}
+Période d'essai : ${data.essaiResume}
+
+Donne une synthèse exécutive (3 lignes), 3 points forts, 3 axes d'amélioration, une recommandation managériale concrète, et un score global /10.`;
+    const j = await callAI({
+      model: "google/gemini-2.5-flash",
+      messages: [{ role: "system", content: sys }, { role: "user", content: user }],
+      tools: [{
+        type: "function",
+        function: {
+          name: "emp_analyse",
+          parameters: {
+            type: "object",
+            properties: {
+              synthese: { type: "string" },
+              pointsForts: { type: "array", items: { type: "string" } },
+              pointsAmeliorer: { type: "array", items: { type: "string" } },
+              recommandation: { type: "string" },
+              scoreGlobal: { type: "number" },
+            },
+            required: ["synthese", "pointsForts", "pointsAmeliorer", "recommandation", "scoreGlobal"],
+          },
+        },
+      }],
+      tool_choice: { type: "function", function: { name: "emp_analyse" } },
+    });
+    return extractToolArgs(j);
+  });

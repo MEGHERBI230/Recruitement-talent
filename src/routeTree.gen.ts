@@ -17,11 +17,13 @@ import { Route as EvaluationsRouteImport } from './routes/evaluations'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TestsIndexRouteImport } from './routes/tests.index'
 import { Route as RapportsIndexRouteImport } from './routes/rapports.index'
+import { Route as PersonnelIndexRouteImport } from './routes/personnel.index'
 import { Route as EntretiensIndexRouteImport } from './routes/entretiens.index'
 import { Route as ComportementIndexRouteImport } from './routes/comportement.index'
 import { Route as CandidatsIndexRouteImport } from './routes/candidats.index'
 import { Route as TestsIdRouteImport } from './routes/tests.$id'
 import { Route as RapportsIdRouteImport } from './routes/rapports.$id'
+import { Route as PersonnelIdRouteImport } from './routes/personnel.$id'
 import { Route as EntretiensIdRouteImport } from './routes/entretiens.$id'
 import { Route as ComportementIdRouteImport } from './routes/comportement.$id'
 import { Route as CandidatsIdRouteImport } from './routes/candidats.$id'
@@ -66,6 +68,11 @@ const RapportsIndexRoute = RapportsIndexRouteImport.update({
   path: '/rapports/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PersonnelIndexRoute = PersonnelIndexRouteImport.update({
+  id: '/personnel/',
+  path: '/personnel/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EntretiensIndexRoute = EntretiensIndexRouteImport.update({
   id: '/entretiens/',
   path: '/entretiens/',
@@ -89,6 +96,11 @@ const TestsIdRoute = TestsIdRouteImport.update({
 const RapportsIdRoute = RapportsIdRouteImport.update({
   id: '/rapports/$id',
   path: '/rapports/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PersonnelIdRoute = PersonnelIdRouteImport.update({
+  id: '/personnel/$id',
+  path: '/personnel/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EntretiensIdRoute = EntretiensIdRouteImport.update({
@@ -117,11 +129,13 @@ export interface FileRoutesByFullPath {
   '/candidats/$id': typeof CandidatsIdRoute
   '/comportement/$id': typeof ComportementIdRoute
   '/entretiens/$id': typeof EntretiensIdRoute
+  '/personnel/$id': typeof PersonnelIdRoute
   '/rapports/$id': typeof RapportsIdRoute
   '/tests/$id': typeof TestsIdRoute
   '/candidats/': typeof CandidatsIndexRoute
   '/comportement/': typeof ComportementIndexRoute
   '/entretiens/': typeof EntretiensIndexRoute
+  '/personnel/': typeof PersonnelIndexRoute
   '/rapports/': typeof RapportsIndexRoute
   '/tests/': typeof TestsIndexRoute
 }
@@ -135,11 +149,13 @@ export interface FileRoutesByTo {
   '/candidats/$id': typeof CandidatsIdRoute
   '/comportement/$id': typeof ComportementIdRoute
   '/entretiens/$id': typeof EntretiensIdRoute
+  '/personnel/$id': typeof PersonnelIdRoute
   '/rapports/$id': typeof RapportsIdRoute
   '/tests/$id': typeof TestsIdRoute
   '/candidats': typeof CandidatsIndexRoute
   '/comportement': typeof ComportementIndexRoute
   '/entretiens': typeof EntretiensIndexRoute
+  '/personnel': typeof PersonnelIndexRoute
   '/rapports': typeof RapportsIndexRoute
   '/tests': typeof TestsIndexRoute
 }
@@ -154,11 +170,13 @@ export interface FileRoutesById {
   '/candidats/$id': typeof CandidatsIdRoute
   '/comportement/$id': typeof ComportementIdRoute
   '/entretiens/$id': typeof EntretiensIdRoute
+  '/personnel/$id': typeof PersonnelIdRoute
   '/rapports/$id': typeof RapportsIdRoute
   '/tests/$id': typeof TestsIdRoute
   '/candidats/': typeof CandidatsIndexRoute
   '/comportement/': typeof ComportementIndexRoute
   '/entretiens/': typeof EntretiensIndexRoute
+  '/personnel/': typeof PersonnelIndexRoute
   '/rapports/': typeof RapportsIndexRoute
   '/tests/': typeof TestsIndexRoute
 }
@@ -174,11 +192,13 @@ export interface FileRouteTypes {
     | '/candidats/$id'
     | '/comportement/$id'
     | '/entretiens/$id'
+    | '/personnel/$id'
     | '/rapports/$id'
     | '/tests/$id'
     | '/candidats/'
     | '/comportement/'
     | '/entretiens/'
+    | '/personnel/'
     | '/rapports/'
     | '/tests/'
   fileRoutesByTo: FileRoutesByTo
@@ -192,11 +212,13 @@ export interface FileRouteTypes {
     | '/candidats/$id'
     | '/comportement/$id'
     | '/entretiens/$id'
+    | '/personnel/$id'
     | '/rapports/$id'
     | '/tests/$id'
     | '/candidats'
     | '/comportement'
     | '/entretiens'
+    | '/personnel'
     | '/rapports'
     | '/tests'
   id:
@@ -210,11 +232,13 @@ export interface FileRouteTypes {
     | '/candidats/$id'
     | '/comportement/$id'
     | '/entretiens/$id'
+    | '/personnel/$id'
     | '/rapports/$id'
     | '/tests/$id'
     | '/candidats/'
     | '/comportement/'
     | '/entretiens/'
+    | '/personnel/'
     | '/rapports/'
     | '/tests/'
   fileRoutesById: FileRoutesById
@@ -229,11 +253,13 @@ export interface RootRouteChildren {
   CandidatsIdRoute: typeof CandidatsIdRoute
   ComportementIdRoute: typeof ComportementIdRoute
   EntretiensIdRoute: typeof EntretiensIdRoute
+  PersonnelIdRoute: typeof PersonnelIdRoute
   RapportsIdRoute: typeof RapportsIdRoute
   TestsIdRoute: typeof TestsIdRoute
   CandidatsIndexRoute: typeof CandidatsIndexRoute
   ComportementIndexRoute: typeof ComportementIndexRoute
   EntretiensIndexRoute: typeof EntretiensIndexRoute
+  PersonnelIndexRoute: typeof PersonnelIndexRoute
   RapportsIndexRoute: typeof RapportsIndexRoute
   TestsIndexRoute: typeof TestsIndexRoute
 }
@@ -296,6 +322,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RapportsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/personnel/': {
+      id: '/personnel/'
+      path: '/personnel'
+      fullPath: '/personnel/'
+      preLoaderRoute: typeof PersonnelIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/entretiens/': {
       id: '/entretiens/'
       path: '/entretiens'
@@ -329,6 +362,13 @@ declare module '@tanstack/react-router' {
       path: '/rapports/$id'
       fullPath: '/rapports/$id'
       preLoaderRoute: typeof RapportsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/personnel/$id': {
+      id: '/personnel/$id'
+      path: '/personnel/$id'
+      fullPath: '/personnel/$id'
+      preLoaderRoute: typeof PersonnelIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/entretiens/$id': {
@@ -365,11 +405,13 @@ const rootRouteChildren: RootRouteChildren = {
   CandidatsIdRoute: CandidatsIdRoute,
   ComportementIdRoute: ComportementIdRoute,
   EntretiensIdRoute: EntretiensIdRoute,
+  PersonnelIdRoute: PersonnelIdRoute,
   RapportsIdRoute: RapportsIdRoute,
   TestsIdRoute: TestsIdRoute,
   CandidatsIndexRoute: CandidatsIndexRoute,
   ComportementIndexRoute: ComportementIndexRoute,
   EntretiensIndexRoute: EntretiensIndexRoute,
+  PersonnelIndexRoute: PersonnelIndexRoute,
   RapportsIndexRoute: RapportsIndexRoute,
   TestsIndexRoute: TestsIndexRoute,
 }
