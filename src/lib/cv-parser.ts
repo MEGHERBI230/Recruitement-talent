@@ -1,6 +1,5 @@
 // Parser CV local (PDF / DOCX / TXT) — 100% navigateur, hors-ligne.
 import * as pdfjs from "pdfjs-dist";
-// @ts-expect-error vite worker import
 import workerSrc from "pdfjs-dist/build/pdf.worker.mjs?url";
 import mammoth from "mammoth";
 
