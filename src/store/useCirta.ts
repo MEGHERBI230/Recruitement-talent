@@ -154,6 +154,9 @@ interface State {
   updateUser: (patch: Partial<UserProfile>) => void;
   login: (displayName: string) => void;
   logout: () => void;
+  updateAISettings: (patch: Partial<AISettings>) => void;
+  bumpAIUsage: (provider: "local" | "cloud") => void;
+  resetAIUsage: () => void;
   reset: () => void;
 }
 
@@ -187,6 +190,8 @@ export const useCirta = create<State>()(
       evaluations: [],
       user: defaultUser,
       auth: { isLoggedIn: false, displayName: "" },
+      aiSettings: DEFAULT_AI_SETTINGS,
+      aiUsage: { local: 0, cloud: 0, lastReset: new Date().toISOString() },
       setStatut: (id, s) => set((st) => ({ candidats: st.candidats.map((c) => (c.id === id ? { ...c, statut: s } : c)) })),
       setScore: (id, score) => set((st) => ({ candidats: st.candidats.map((c) => (c.id === id ? { ...c, score } : c)) })),
       updateCandidat: (id, patch) => set((st) => ({ candidats: st.candidats.map((c) => (c.id === id ? { ...c, ...patch } : c)) })),
@@ -206,8 +211,11 @@ export const useCirta = create<State>()(
       updateUser: (patch) => set((st) => ({ user: { ...st.user, ...patch } })),
       login: (displayName) => set(() => ({ auth: { isLoggedIn: true, displayName } })),
       logout: () => set(() => ({ auth: { isLoggedIn: false, displayName: "" } })),
-      reset: () => set({ candidats: seedExt, postes: POSTES, machines: MACHINES as MachineExt[], entretiens: {}, tests: {}, comportements: {}, evaluations: [], user: defaultUser }),
+      updateAISettings: (patch) => set((st) => ({ aiSettings: { ...st.aiSettings, ...patch } })),
+      bumpAIUsage: (provider) => set((st) => ({ aiUsage: { ...st.aiUsage, [provider]: st.aiUsage[provider] + 1 } })),
+      resetAIUsage: () => set(() => ({ aiUsage: { local: 0, cloud: 0, lastReset: new Date().toISOString() } })),
+      reset: () => set((st) => ({ candidats: seedExt, postes: POSTES, machines: MACHINES as MachineExt[], entretiens: {}, tests: {}, comportements: {}, evaluations: [], user: defaultUser, aiSettings: st.aiSettings, aiUsage: st.aiUsage })),
     }),
-    { name: "cirta-store-v4" },
+    { name: "cirta-store-v5" },
   ),
 );
