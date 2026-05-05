@@ -44,11 +44,15 @@ export const Route = createRootRoute({
       { title: "CIRTA Recruitment Assistant" },
       { name: "description", content: "Plateforme intelligente d'aide au recrutement industriel — CIRTA AUTOMOTIVE" },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "CIRTA Recruitment Assistant" },
+      { property: "og:description", content: "Plateforme intelligente d'aide au recrutement industriel — CIRTA AUTOMOTIVE" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "CIRTA Recruitment Assistant" },
+      { name: "twitter:description", content: "Plateforme intelligente d'aide au recrutement industriel — CIRTA AUTOMOTIVE" },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4a6c1fbc-40b0-49d5-b565-42c83d6db43d/id-preview-31bde14f--4fa4ba25-30d6-4d2c-8384-f57f0c7abb3c.lovable.app-1777990979771.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4a6c1fbc-40b0-49d5-b565-42c83d6db43d/id-preview-31bde14f--4fa4ba25-30d6-4d2c-8384-f57f0c7abb3c.lovable.app-1777990979771.png" },
     ],
     links: [
       {
