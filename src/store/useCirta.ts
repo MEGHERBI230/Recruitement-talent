@@ -280,14 +280,7 @@ const defaultUser: UserProfile = {
   weights: DEFAULT_WEIGHTS,
 };
 
-const seedExt: CandidatExt[] = CANDIDATS.map((c) => ({
-  ...c,
-  email: `${c.prenom.toLowerCase()}.${c.nom.toLowerCase()}@email.com`,
-  telephone: "+213 5XX XX XX XX",
-  ville: "Constantine",
-  competences: [],
-  machinesMaitrisees: [],
-}));
+const seedExt: CandidatExt[] = [];
 
 export const useCirta = create<State>()(
   persist(
@@ -373,6 +366,6 @@ export const useCirta = create<State>()(
       resetAIUsage: () => set(() => ({ aiUsage: { local: 0, cloud: 0, lastReset: new Date().toISOString() } })),
       reset: () => set((st) => ({ candidats: seedExt, postes: POSTES, machines: MACHINES as MachineExt[], entretiens: {}, tests: {}, comportements: {}, evaluations: [], employes: [], user: defaultUser, aiSettings: st.aiSettings, aiUsage: st.aiUsage })),
     }),
-    { name: "cirta-store-v6" },
+    { name: "cirta-store-v7" },
   ),
 );
