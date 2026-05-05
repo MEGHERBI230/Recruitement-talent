@@ -8,7 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useCirta, type Employe } from "@/store/useCirta";
-import { Users, UserPlus, Printer, AlertTriangle, Clock, ShieldCheck, Search } from "lucide-react";
+import { Users, UserPlus, Printer, AlertTriangle, Clock, ShieldCheck, Search, Trash2 } from "lucide-react";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { printPage } from "@/lib/print";
 
@@ -19,9 +23,11 @@ function daysUntil(d?: string) { if (!d) return Infinity; return Math.ceil((new 
 function PersonnelList() {
   const employes = useCirta((s) => s.employes);
   const addEmploye = useCirta((s) => s.addEmploye);
+  const desactiverEmploye = useCirta((s) => s.desactiverEmploye);
   const [q, setQ] = useState("");
   const [dept, setDept] = useState("all");
   const [contrat, setContrat] = useState("all");
+  const [delId, setDelId] = useState<string | null>(null);
 
   const actifs = employes.filter((e) => e.actif);
   const stats = useMemo(() => {
@@ -179,7 +185,10 @@ function PersonnelList() {
                       }>{e.periodeEssai.statut}</Badge> : "—"}
                     </TableCell>
                     <TableCell className="text-sm">{abs}</TableCell>
-                    <TableCell><Button size="sm" variant="outline" asChild><Link to="/personnel/$id" params={{ id: e.id }}>Ouvrir</Link></Button></TableCell>
+                    <TableCell className="text-right">
+                      <Button size="sm" variant="outline" asChild><Link to="/personnel/$id" params={{ id: e.id }}>Ouvrir</Link></Button>
+                      <Button size="sm" variant="ghost" onClick={() => setDelId(e.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                    </TableCell>
                   </TableRow>
                 );
               })}
