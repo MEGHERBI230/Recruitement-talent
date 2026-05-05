@@ -38,7 +38,39 @@ function CandidatsPage() {
   const weights = useCirta((s) => s.user.weights);
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({ nom: "", prenom: "", posteVise: POSTES[0].intitule, experience: 0, diplome: "TS", competences: "", machines: "" });
+
+  const onFiles = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setImporting(true);
+    let ok = 0, ko = 0;
+    for (const file of Array.from(files)) {
+      try {
+        const cv = await importCVFile(file);
+        const posteVise = form.posteVise || POSTES[0].intitule;
+        const poste = POSTES.find((p) => p.intitule === posteVise)!;
+        const sc = scoreCandidat({ experience: cv.experience, diplome: cv.diplome, competences: cv.competences, machinesMaitrisees: cv.machines, posteVise }, weights);
+        addCandidat({
+          id: `c${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+          nom: cv.nom || file.name.replace(/\.[^.]+$/, ""),
+          prenom: cv.prenom || "",
+          posteVise, experience: cv.experience, diplome: cv.diplome, score: sc.total, statut: "analyse",
+          bu: poste.bu, competences: cv.competences, machinesMaitrisees: cv.machines,
+          email: cv.email, telephone: cv.telephone, ville: "",
+        });
+        ok++;
+      } catch (e: any) {
+        console.error("Import CV échec:", file.name, e);
+        ko++;
+      }
+    }
+    setImporting(false);
+    if (fileRef.current) fileRef.current.value = "";
+    if (ok) toast.success(`${ok} CV importé(s) et analysé(s)`);
+    if (ko) toast.error(`${ko} fichier(s) non lus (format non supporté ou illisible)`);
+  };
 
   const filtered = candidats.filter((c) => q === "" || `${c.prenom} ${c.nom} ${c.posteVise}`.toLowerCase().includes(q.toLowerCase()));
 
