@@ -39,6 +39,7 @@ const items = [
   { title: "Personnel", url: "/personnel", icon: UserCog },
   { title: "Rapports", url: "/rapports", icon: FileBarChart },
   { title: "Redémarrage usine", url: "/redemarrage", icon: Factory },
+  { title: "Utilisateurs", url: "/utilisateurs", icon: Users2 },
   { title: "Paramètres", url: "/parametres", icon: Settings },
 ];
 
