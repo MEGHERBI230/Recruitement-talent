@@ -12,6 +12,7 @@ import {
   planRestart,
   generateRhEvaluation,
   analyzeRhEvaluation,
+  analyzeEmploye,
 } from "@/server/ai.functions";
 
 export type AITask =
@@ -23,7 +24,8 @@ export type AITask =
   | "analyzeBehavior"
   | "planRestart"
   | "generateRhEvaluation"
-  | "analyzeRhEvaluation";
+  | "analyzeRhEvaluation"
+  | "analyzeEmploye";
 
 export type AIProvider = "local" | "cloud" | "auto";
 
@@ -37,6 +39,7 @@ const CLOUD_FN: Record<AITask, (args: any) => Promise<any>> = {
   planRestart: (data) => planRestart({ data }),
   generateRhEvaluation: (data) => generateRhEvaluation({ data }),
   analyzeRhEvaluation: (data) => analyzeRhEvaluation({ data }),
+  analyzeEmploye: (data) => analyzeEmploye({ data }),
 };
 
 // === Prompts spécifiques par tâche ===
