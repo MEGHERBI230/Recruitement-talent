@@ -280,14 +280,7 @@ const defaultUser: UserProfile = {
   weights: DEFAULT_WEIGHTS,
 };
 
-const seedExt: CandidatExt[] = CANDIDATS.map((c) => ({
-  ...c,
-  email: `${c.prenom.toLowerCase()}.${c.nom.toLowerCase()}@email.com`,
-  telephone: "+213 5XX XX XX XX",
-  ville: "Constantine",
-  competences: [],
-  machinesMaitrisees: [],
-}));
+const seedExt: CandidatExt[] = [];
 
 export const useCirta = create<State>()(
   persist(
