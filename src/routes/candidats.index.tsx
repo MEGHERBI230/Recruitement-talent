@@ -1,19 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Upload, Search, Sparkles, Plus } from "lucide-react";
+import { Upload, Search, Sparkles, Plus, Loader2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { STATUT_LABELS, BU_COLORS, POSTES, BU } from "@/data/cirta";
+import { STATUT_LABELS, BU_COLORS, POSTES } from "@/data/cirta";
 import { useCirta } from "@/store/useCirta";
 import { scoreCandidat } from "@/lib/scoring";
+import { importCVFile } from "@/lib/cv-parser";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/candidats/")({ component: CandidatsPage });
