@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Letterhead, LetterheadFooter } from "@/components/Letterhead";
 import { useCirta, type TestData } from "@/store/useCirta";
 import { POSTES } from "@/data/cirta";
-import { generatePracticalTest, analyzePracticalTest } from "@/server/ai.functions";
+import { runAI, type AIProvider } from "@/lib/ai-client";
 import { ArrowLeft, Sparkles, Printer, Save, Loader2, RotateCcw, Camera, Upload, X, ScanLine } from "lucide-react";
 import { toast } from "sonner";
 import { printPage } from "@/lib/print";

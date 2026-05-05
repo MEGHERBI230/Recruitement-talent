@@ -13,7 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Letterhead, LetterheadFooter } from "@/components/Letterhead";
 import { useCirta, EVAL_LABELS, type EvaluationData, type EvaluationType, type EvalNote } from "@/store/useCirta";
 import { POSTES } from "@/data/cirta";
-import { generateRhEvaluation, analyzeRhEvaluation } from "@/server/ai.functions";
+import { runAI, type AIProvider } from "@/lib/ai-client";
 import { Sparkles, Plus, Printer, Loader2, Save, Trash2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { printPage } from "@/lib/print";

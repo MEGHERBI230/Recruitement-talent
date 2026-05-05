@@ -12,7 +12,7 @@ import { Letterhead, LetterheadFooter } from "@/components/Letterhead";
 import { useCirta } from "@/store/useCirta";
 import { POSTES, MACHINES, BU_LABELS, BU } from "@/data/cirta";
 import { buReadiness } from "@/lib/scoring";
-import { planRestart } from "@/server/ai.functions";
+import { runAI, type AIProvider } from "@/lib/ai-client";
 import { Sparkles, Loader2, Printer, Factory, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { printPage } from "@/lib/print";
