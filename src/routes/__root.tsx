@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LogOut, LogIn, User } from "lucide-react";
+import { AIUsageBadge } from "@/components/AIControls";
 import logo from "@/assets/logo-cirta.png";
 
 import appCss from "../styles.css?url";
