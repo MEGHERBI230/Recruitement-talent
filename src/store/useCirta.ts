@@ -455,6 +455,6 @@ export const useCirta = create<State>()(
       resetAIUsage: () => set(() => ({ aiUsage: { local: 0, cloud: 0, lastReset: new Date().toISOString() } })),
       reset: () => set((st) => ({ candidats: seedExt, postes: POSTES, machines: MACHINES as MachineExt[], entretiens: {}, tests: {}, comportements: {}, evaluations: [], employes: [], user: defaultUser, aiSettings: st.aiSettings, aiUsage: st.aiUsage })),
     }),
-    { name: "cirta-store-v7" },
+    { name: "cirta-store-v8" },
   ),
 );
