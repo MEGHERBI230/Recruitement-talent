@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LogOut, LogIn, User } from "lucide-react";
+import { AIUsageBadge } from "@/components/AIControls";
 import logo from "@/assets/logo-cirta.png";
 
 import appCss from "../styles.css?url";
@@ -127,6 +128,7 @@ function RootComponent() {
               </span>
             </div>
             <div className="flex items-center gap-2">
+              <div className="hidden sm:block"><AIUsageBadge compact /></div>
               <div className="hidden items-center gap-2 rounded-md border border-border bg-background px-2 py-1 text-xs sm:flex">
                 <User className="h-3.5 w-3.5 text-muted-foreground" />
                 <span className="font-medium text-foreground">{displayName}</span>

@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Letterhead, LetterheadFooter } from "@/components/Letterhead";
 import { useCirta, type ComportementData } from "@/store/useCirta";
-import { generateBehaviorTest, analyzeBehavior } from "@/server/ai.functions";
+import { runAI, type AIProvider } from "@/lib/ai-client";
+import { Cloud, HardDrive } from "lucide-react";
 import { ArrowLeft, Sparkles, Printer, Save, Loader2, RotateCcw, Upload, X, ScanLine } from "lucide-react";
 import { toast } from "sonner";
 import { printPage } from "@/lib/print";
@@ -33,10 +34,10 @@ function ComptPage() {
 
   if (!candidat) return <div className="p-6">Candidat introuvable</div>;
 
-  const generer = async () => {
+  const generer = async (provider: AIProvider = "auto") => {
     setLoading(true);
     try {
-      const res = await generateBehaviorTest({ data: { poste: candidat.posteVise, bu: candidat.bu } });
+      const res = await runAI("generateBehaviorTest", { poste: candidat.posteVise, bu: candidat.bu }, { provider });
       const next: ComportementData = { candidatId: id, date: new Date().toISOString(), questions: res.questions, reponses: Array(res.questions.length).fill("") };
       save(next);
       setReponses(next.reponses!);
@@ -47,12 +48,12 @@ function ComptPage() {
   const onScan = async (f?: File) => { if (f) setScan(await fileToDataUrl(f)); };
   const sauver = () => { save({ candidatId: id, reponses, scanReponses: scan }); toast.success("Enregistré"); };
 
-  const analyser = async () => {
+  const analyser = async (provider: AIProvider = "auto") => {
     if (!data?.questions) return;
     setAnalyzing(true);
     try {
       const qa = data.questions.map((q, i) => ({ ...q, reponse: reponses[i] ?? "" }));
-      const a = await analyzeBehavior({ data: { poste: candidat.posteVise, qa, scanReponses: scan } });
+      const a = await runAI("analyzeBehavior", { poste: candidat.posteVise, qa, scanReponses: scan }, { provider });
       save({ candidatId: id, reponses, scanReponses: scan, analyse: a, scoreGlobal: a.score });
       setScore(id, a.score);
       toast.success(`Comportemental évalué — ${a.score}/100`);
@@ -65,7 +66,7 @@ function ComptPage() {
         <Button variant="ghost" size="sm" asChild><Link to="/candidats/$id" params={{ id }}><ArrowLeft className="mr-2 h-4 w-4" /> Fiche candidat</Link></Button>
         <div className="flex gap-2">
           {data?.questions && <Button variant="outline" onClick={printPage}><Printer className="mr-2 h-4 w-4" /> Imprimer</Button>}
-          {data?.questions && <Button variant="outline" onClick={generer} disabled={loading}><RotateCcw className="mr-2 h-4 w-4" /> Régénérer</Button>}
+          {data?.questions && <Button variant="outline" onClick={() => generer()} disabled={loading}><RotateCcw className="mr-2 h-4 w-4" /> Régénérer</Button>}
         </div>
       </div>
 
@@ -80,7 +81,7 @@ function ComptPage() {
           <CardContent className="p-8 text-center">
             <Sparkles className="mx-auto mb-3 h-10 w-10 text-primary" />
             <p className="mb-4 text-sm text-muted-foreground">Génère un test comportemental contextualisé.</p>
-            <Button size="lg" onClick={generer} disabled={loading}>{loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />} Générer le test</Button>
+            <div className="flex flex-wrap justify-center gap-2"><Button size="lg" onClick={() => generer("auto")} disabled={loading}>{loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <HardDrive className="mr-2 h-4 w-4" />} Générer (IA locale)</Button><Button size="lg" variant="outline" onClick={() => generer("cloud")} disabled={loading}><Cloud className="mr-2 h-4 w-4" /> IA avancée (cloud)</Button></div>
           </CardContent>
         </Card>
       )}
@@ -116,7 +117,7 @@ function ComptPage() {
               </div>
               <div className="flex justify-end gap-2 no-print">
                 <Button variant="outline" onClick={sauver}><Save className="mr-2 h-4 w-4" /> Enregistrer</Button>
-                <Button onClick={analyser} disabled={analyzing}>{analyzing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ScanLine className="mr-2 h-4 w-4" />} Analyser avec l'IA</Button>
+                <Button onClick={() => analyser("auto")} disabled={analyzing}>{analyzing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <HardDrive className="mr-2 h-4 w-4" />} Analyser (local)</Button><Button variant="outline" onClick={() => analyser("cloud")} disabled={analyzing}><Cloud className="mr-2 h-4 w-4" /> IA avancée (cloud)</Button>
               </div>
             </CardContent>
           </Card>

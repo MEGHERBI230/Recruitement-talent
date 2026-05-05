@@ -105,6 +105,24 @@ export const EVAL_LABELS: Record<EvaluationType, string> = {
 
 interface AuthState { isLoggedIn: boolean; displayName: string }
 
+export interface AISettings {
+  ollamaUrl: string;
+  ollamaModel: string;
+  preferLocal: boolean;
+  fallbackToCloud: boolean;
+}
+export interface AIUsage {
+  local: number;
+  cloud: number;
+  lastReset: string;
+}
+export const DEFAULT_AI_SETTINGS: AISettings = {
+  ollamaUrl: "http://localhost:11434",
+  ollamaModel: "llama3.1",
+  preferLocal: true,
+  fallbackToCloud: true,
+};
+
 interface State {
   candidats: CandidatExt[];
   postes: Poste[];
@@ -115,6 +133,8 @@ interface State {
   evaluations: EvaluationData[];
   user: UserProfile;
   auth: AuthState;
+  aiSettings: AISettings;
+  aiUsage: AIUsage;
   setStatut: (id: string, s: CandidatStatut) => void;
   setScore: (id: string, score: number) => void;
   updateCandidat: (id: string, patch: Partial<CandidatExt>) => void;
@@ -134,6 +154,9 @@ interface State {
   updateUser: (patch: Partial<UserProfile>) => void;
   login: (displayName: string) => void;
   logout: () => void;
+  updateAISettings: (patch: Partial<AISettings>) => void;
+  bumpAIUsage: (provider: "local" | "cloud") => void;
+  resetAIUsage: () => void;
   reset: () => void;
 }
 
@@ -167,6 +190,8 @@ export const useCirta = create<State>()(
       evaluations: [],
       user: defaultUser,
       auth: { isLoggedIn: false, displayName: "" },
+      aiSettings: DEFAULT_AI_SETTINGS,
+      aiUsage: { local: 0, cloud: 0, lastReset: new Date().toISOString() },
       setStatut: (id, s) => set((st) => ({ candidats: st.candidats.map((c) => (c.id === id ? { ...c, statut: s } : c)) })),
       setScore: (id, score) => set((st) => ({ candidats: st.candidats.map((c) => (c.id === id ? { ...c, score } : c)) })),
       updateCandidat: (id, patch) => set((st) => ({ candidats: st.candidats.map((c) => (c.id === id ? { ...c, ...patch } : c)) })),
@@ -186,8 +211,11 @@ export const useCirta = create<State>()(
       updateUser: (patch) => set((st) => ({ user: { ...st.user, ...patch } })),
       login: (displayName) => set(() => ({ auth: { isLoggedIn: true, displayName } })),
       logout: () => set(() => ({ auth: { isLoggedIn: false, displayName: "" } })),
-      reset: () => set({ candidats: seedExt, postes: POSTES, machines: MACHINES as MachineExt[], entretiens: {}, tests: {}, comportements: {}, evaluations: [], user: defaultUser }),
+      updateAISettings: (patch) => set((st) => ({ aiSettings: { ...st.aiSettings, ...patch } })),
+      bumpAIUsage: (provider) => set((st) => ({ aiUsage: { ...st.aiUsage, [provider]: st.aiUsage[provider] + 1 } })),
+      resetAIUsage: () => set(() => ({ aiUsage: { local: 0, cloud: 0, lastReset: new Date().toISOString() } })),
+      reset: () => set((st) => ({ candidats: seedExt, postes: POSTES, machines: MACHINES as MachineExt[], entretiens: {}, tests: {}, comportements: {}, evaluations: [], user: defaultUser, aiSettings: st.aiSettings, aiUsage: st.aiUsage })),
     }),
-    { name: "cirta-store-v4" },
+    { name: "cirta-store-v5" },
   ),
 );

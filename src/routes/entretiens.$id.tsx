@@ -9,7 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { Letterhead, LetterheadFooter } from "@/components/Letterhead";
 import { useCirta, type EntretienData } from "@/store/useCirta";
 import { POSTES } from "@/data/cirta";
-import { generateInterview, analyzeInterview } from "@/server/ai.functions";
+import { runAI, type AIProvider } from "@/lib/ai-client";
+import { Cloud, HardDrive } from "lucide-react";
 import { ArrowLeft, Sparkles, Printer, Save, Loader2, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { printPage } from "@/lib/print";
@@ -31,19 +32,17 @@ function EntretienPage() {
   if (!candidat) return <div className="p-6">Candidat introuvable</div>;
   const poste = POSTES.find((p) => p.intitule === candidat.posteVise);
 
-  const generer = async () => {
+  const generer = async (provider: AIProvider = "auto") => {
     setLoading(true);
     try {
-      const res = await generateInterview({
-        data: {
+      const res = await runAI("generateInterview", {
           poste: candidat.posteVise,
           bu: candidat.bu,
           experience: poste?.experienceMin ?? candidat.experience,
           diplome: poste?.diplome ?? candidat.diplome,
           competences: poste?.competences,
           machines: poste?.machines,
-        },
-      });
+        }, { provider });
       const next: EntretienData = { candidatId: id, date: new Date().toISOString(), questions: res.questions, reponses: Array(res.questions.length).fill("") };
       save(next);
       setReponses(next.reponses!);
@@ -58,12 +57,12 @@ function EntretienPage() {
     toast.success("Réponses enregistrées");
   };
 
-  const analyser = async () => {
+  const analyser = async (provider: AIProvider = "auto") => {
     if (!data?.questions) return;
     setAnalyzing(true);
     try {
       const qa = data.questions.map((q, i) => ({ question: q.question, reponse: reponses[i] ?? "" }));
-      const a = await analyzeInterview({ data: { poste: candidat.posteVise, qa } });
+      const a = await runAI("analyzeInterview", { poste: candidat.posteVise, qa }, { provider });
       save({ candidatId: id, reponses, analyse: a, scoreGlobal: a.score });
       setScore(id, a.score);
       toast.success(`Entretien évalué — ${a.score}/100 (${a.recommandation})`);
@@ -78,7 +77,7 @@ function EntretienPage() {
         <Button variant="ghost" size="sm" asChild><Link to="/candidats/$id" params={{ id }}><ArrowLeft className="mr-2 h-4 w-4" /> Fiche candidat</Link></Button>
         <div className="flex gap-2">
           {data?.questions && <Button variant="outline" onClick={() => printPage()}><Printer className="mr-2 h-4 w-4" /> Imprimer</Button>}
-          {data?.questions && <Button variant="outline" onClick={generer} disabled={loading}><RotateCcw className="mr-2 h-4 w-4" /> Régénérer</Button>}
+          {data?.questions && <Button variant="outline" onClick={() => generer()} disabled={loading}><RotateCcw className="mr-2 h-4 w-4" /> Régénérer</Button>}
         </div>
       </div>
 
@@ -93,10 +92,7 @@ function EntretienPage() {
           <CardContent className="p-8 text-center">
             <Sparkles className="mx-auto mb-3 h-10 w-10 text-primary" />
             <p className="mb-4 text-sm text-muted-foreground">Aucun entretien généré. L'IA va construire un guide d'entretien personnalisé selon le poste, le CV et les machines associées.</p>
-            <Button size="lg" onClick={generer} disabled={loading}>
-              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-              Générer l'entretien avec l'IA
-            </Button>
+            <div className="flex flex-wrap justify-center gap-2"><Button size="lg" onClick={() => generer("auto")} disabled={loading}>{loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <HardDrive className="mr-2 h-4 w-4" />} Générer (IA locale)</Button><Button size="lg" variant="outline" onClick={() => generer("cloud")} disabled={loading}><Cloud className="mr-2 h-4 w-4" /> IA avancée (cloud)</Button></div>
           </CardContent>
         </Card>
       )}
@@ -128,10 +124,7 @@ function EntretienPage() {
               ))}
               <div className="flex justify-end gap-2 no-print">
                 <Button variant="outline" onClick={sauverReponses}><Save className="mr-2 h-4 w-4" /> Enregistrer</Button>
-                <Button onClick={analyser} disabled={analyzing}>
-                  {analyzing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                  Analyser avec l'IA
-                </Button>
+                <Button onClick={() => analyser("auto")} disabled={analyzing}>{analyzing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <HardDrive className="mr-2 h-4 w-4" />} Analyser (local)</Button><Button variant="outline" onClick={() => analyser("cloud")} disabled={analyzing}><Cloud className="mr-2 h-4 w-4" /> IA avancée (cloud)</Button>
               </div>
             </CardContent>
           </Card>

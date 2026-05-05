@@ -12,7 +12,8 @@ import { Letterhead, LetterheadFooter } from "@/components/Letterhead";
 import { useCirta } from "@/store/useCirta";
 import { POSTES, MACHINES, BU_LABELS, BU } from "@/data/cirta";
 import { buReadiness } from "@/lib/scoring";
-import { planRestart } from "@/server/ai.functions";
+import { runAI, type AIProvider } from "@/lib/ai-client";
+import { Cloud, HardDrive } from "lucide-react";
 import { Sparkles, Loader2, Printer, Factory, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { printPage } from "@/lib/print";
@@ -35,14 +36,13 @@ function Redemarrage() {
     : r.niveau === "À RISQUE" ? "bg-warning/15 text-warning border-warning/30"
     : "bg-destructive/10 text-destructive border-destructive/30";
 
-  const generer = async () => {
+  const generer = async (provider: AIProvider = "auto") => {
     setLoading(true);
     try {
       const postes = POSTES.filter((p) => p.bu === bu);
       const machines = MACHINES.filter((m) => m.bu === bu);
       const cands = candidats.filter((c) => c.bu === bu);
-      const res = await planRestart({
-        data: {
+      const res = await runAI("planRestart", {
           bu,
           buLabel: BU_LABELS[bu],
           objectif,
@@ -52,8 +52,7 @@ function Redemarrage() {
           })),
           machinesEtat: machines.map((m) => ({ nom: m.nom, etat: m.etat, criticite: m.criticite })),
           candidatsDisponibles: cands.map((c) => ({ posteVise: c.posteVise, score: c.score, statut: c.statut })),
-        },
-      });
+        }, { provider });
       setPlan(res);
       toast.success("Plan de redémarrage généré");
     } catch (e: any) {
@@ -91,10 +90,7 @@ function Redemarrage() {
             <Input value={objectif} onChange={(e) => setObjectif(e.target.value)} placeholder="Ex : démarrer la ligne caoutchouc d'ici 6 semaines" maxLength={300} />
           </div>
           <div className="md:col-span-3 flex justify-end">
-            <Button onClick={generer} disabled={loading}>
-              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-              Générer le plan IA
-            </Button>
+            <div className="flex gap-2"><Button onClick={() => generer("auto")} disabled={loading}>{loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <HardDrive className="mr-2 h-4 w-4" />} Plan IA (local)</Button><Button variant="outline" onClick={() => generer("cloud")} disabled={loading}><Cloud className="mr-2 h-4 w-4" /> IA avancée (cloud)</Button></div>
           </div>
         </CardContent>
       </Card>

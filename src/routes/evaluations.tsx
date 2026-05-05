@@ -13,7 +13,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Letterhead, LetterheadFooter } from "@/components/Letterhead";
 import { useCirta, EVAL_LABELS, type EvaluationData, type EvaluationType, type EvalNote } from "@/store/useCirta";
 import { POSTES } from "@/data/cirta";
-import { generateRhEvaluation, analyzeRhEvaluation } from "@/server/ai.functions";
+import { runAI, type AIProvider } from "@/lib/ai-client";
+import { Cloud, HardDrive } from "lucide-react";
 import { Sparkles, Plus, Printer, Loader2, Save, Trash2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { printPage } from "@/lib/print";
@@ -50,15 +51,14 @@ function EvaluationsPage() {
   const activeCandidat = active ? candidats.find((c) => c.id === active.candidatId) : null;
   const activePoste = activeCandidat ? POSTES.find((p) => p.intitule === activeCandidat.posteVise) : null;
 
-  const launchEval = async () => {
+  const launchEval = async (provider: AIProvider = "auto") => {
     if (!form.candidatId) { toast.error("Sélectionnez un collaborateur"); return; }
     const c = candidats.find((x) => x.id === form.candidatId);
     if (!c) return;
     const poste = POSTES.find((p) => p.intitule === c.posteVise);
     setGenLoading(true);
     try {
-      const res = await generateRhEvaluation({
-        data: {
+      const res = await runAI<{ questions: any[] }>("generateRhEvaluation", {
           type: form.type,
           poste: c.posteVise,
           bu: c.bu,
@@ -66,8 +66,7 @@ function EvaluationsPage() {
           competences: poste?.competences,
           machines: poste?.machines,
           moisAnciennete: form.mois,
-        },
-      });
+        }, { provider });
       const id = `ev${Date.now()}`;
       const evalData: EvaluationData = {
         id,
@@ -75,7 +74,7 @@ function EvaluationsPage() {
         type: form.type,
         date: new Date().toISOString(),
         questions: res.questions,
-        notes: res.questions.map((q, i) => ({ idx: i, note: 0, commentaire: "" })),
+        notes: res.questions.map((_q: any, i: number) => ({ idx: i, note: 0, commentaire: "" })),
         observationsTerrain: "",
       };
       addEvaluation(evalData);
@@ -95,7 +94,7 @@ function EvaluationsPage() {
     updateEvaluation(active.id, { notes });
   };
 
-  const analyser = async () => {
+  const analyser = async (provider: AIProvider = "auto") => {
     if (!active || !activeCandidat) return;
     setAnalyzing(true);
     try {
@@ -103,9 +102,7 @@ function EvaluationsPage() {
         question: q.question, objectif: q.objectif, bareme: q.bareme,
         note: active.notes[i]?.note ?? 0, commentaire: active.notes[i]?.commentaire ?? "",
       }));
-      const res = await analyzeRhEvaluation({
-        data: { type: active.type, poste: activeCandidat.posteVise, items, observationsTerrain: active.observationsTerrain },
-      });
+      const res = await runAI("analyzeRhEvaluation", { type: active.type, poste: activeCandidat.posteVise, items, observationsTerrain: active.observationsTerrain }, { provider });
       updateEvaluation(active.id, { analyse: res });
       toast.success(`Analyse IA — ${res.verdict} (${res.scoreGlobal}/100)`);
     } catch (e: any) {
@@ -188,7 +185,7 @@ function EvaluationsPage() {
               <h2 className="text-lg font-semibold">{EVAL_LABELS[active.type]} — {activeCandidat.prenom} {activeCandidat.nom}</h2>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={analyser} disabled={analyzing}>
+              <Button variant="outline" onClick={() => analyser()} disabled={analyzing}>
                 {analyzing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                 Analyser (IA)
               </Button>
@@ -303,7 +300,7 @@ function EvaluationsPage() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpenNew(false)}>Annuler</Button>
-            <Button onClick={launchEval} disabled={genLoading}>
+            <Button onClick={() => launchEval()} disabled={genLoading}>
               {genLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
               Générer la grille (IA)
             </Button>
