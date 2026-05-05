@@ -209,7 +209,24 @@ export const EVAL_LABELS: Record<EvaluationType, string> = {
   cdd_to_cdi: "Passage CDD → CDI",
 };
 
-interface AuthState { isLoggedIn: boolean; displayName: string }
+export type UserRole = "admin" | "user";
+export interface AppUser {
+  id: string;
+  nom: string;
+  email: string;
+  password: string;
+  role: UserRole;
+  actif: boolean;
+  createdAt: string;
+  lastLoginAt?: string;
+}
+interface AuthState {
+  isLoggedIn: boolean;
+  displayName: string;
+  userId?: string;
+  role?: UserRole;
+  loginAt?: string;
+}
 
 export interface AISettings {
   ollamaUrl: string;
