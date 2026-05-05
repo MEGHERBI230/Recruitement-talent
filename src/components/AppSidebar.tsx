@@ -12,6 +12,7 @@ import {
   Factory,
   ShieldCheck,
   UserCog,
+  Users2,
 } from "lucide-react";
 import {
   Sidebar,
