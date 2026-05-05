@@ -254,8 +254,11 @@ interface State {
   updateMachine: (id: string, patch: Partial<MachineExt>) => void;
   deleteMachine: (id: string) => void;
   saveEntretien: (d: EntretienData) => void;
+  deleteEntretien: (candidatId: string) => void;
   saveTest: (d: TestData) => void;
+  deleteTest: (candidatId: string) => void;
   saveComportement: (d: ComportementData) => void;
+  deleteComportement: (candidatId: string) => void;
   addEvaluation: (e: EvaluationData) => void;
   updateEvaluation: (id: string, patch: Partial<EvaluationData>) => void;
   deleteEvaluation: (id: string) => void;
