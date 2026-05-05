@@ -246,6 +246,7 @@ interface State {
   setScore: (id: string, score: number) => void;
   updateCandidat: (id: string, patch: Partial<CandidatExt>) => void;
   addCandidat: (c: CandidatExt) => void;
+  deleteCandidat: (id: string) => void;
   addPoste: (p: Poste) => void;
   updatePoste: (id: string, patch: Partial<Poste>) => void;
   deletePoste: (id: string) => void;
@@ -253,8 +254,11 @@ interface State {
   updateMachine: (id: string, patch: Partial<MachineExt>) => void;
   deleteMachine: (id: string) => void;
   saveEntretien: (d: EntretienData) => void;
+  deleteEntretien: (candidatId: string) => void;
   saveTest: (d: TestData) => void;
+  deleteTest: (candidatId: string) => void;
   saveComportement: (d: ComportementData) => void;
+  deleteComportement: (candidatId: string) => void;
   addEvaluation: (e: EvaluationData) => void;
   updateEvaluation: (id: string, patch: Partial<EvaluationData>) => void;
   deleteEvaluation: (id: string) => void;
@@ -301,6 +305,15 @@ export const useCirta = create<State>()(
       setScore: (id, score) => set((st) => ({ candidats: st.candidats.map((c) => (c.id === id ? { ...c, score } : c)) })),
       updateCandidat: (id, patch) => set((st) => ({ candidats: st.candidats.map((c) => (c.id === id ? { ...c, ...patch } : c)) })),
       addCandidat: (c) => set((st) => ({ candidats: [c, ...st.candidats] })),
+      deleteCandidat: (id) => set((st) => {
+        const { [id]: _e, ...entretiens } = st.entretiens;
+        const { [id]: _t, ...tests } = st.tests;
+        const { [id]: _c, ...comportements } = st.comportements;
+        return {
+          candidats: st.candidats.filter((c) => c.id !== id),
+          entretiens, tests, comportements,
+        };
+      }),
       addPoste: (p) => set((st) => ({ postes: [p, ...st.postes] })),
       updatePoste: (id, patch) => set((st) => ({ postes: st.postes.map((p) => (p.id === id ? { ...p, ...patch } : p)) })),
       deletePoste: (id) => set((st) => ({ postes: st.postes.filter((p) => p.id !== id) })),
@@ -308,8 +321,11 @@ export const useCirta = create<State>()(
       updateMachine: (id, patch) => set((st) => ({ machines: st.machines.map((m) => (m.id === id ? { ...m, ...patch } : m)) })),
       deleteMachine: (id) => set((st) => ({ machines: st.machines.filter((m) => m.id !== id) })),
       saveEntretien: (d) => set((st) => ({ entretiens: { ...st.entretiens, [d.candidatId]: { ...st.entretiens[d.candidatId], ...d } } })),
+      deleteEntretien: (candidatId) => set((st) => { const { [candidatId]: _, ...rest } = st.entretiens; return { entretiens: rest }; }),
       saveTest: (d) => set((st) => ({ tests: { ...st.tests, [d.candidatId]: { ...st.tests[d.candidatId], ...d } } })),
+      deleteTest: (candidatId) => set((st) => { const { [candidatId]: _, ...rest } = st.tests; return { tests: rest }; }),
       saveComportement: (d) => set((st) => ({ comportements: { ...st.comportements, [d.candidatId]: { ...st.comportements[d.candidatId], ...d } } })),
+      deleteComportement: (candidatId) => set((st) => { const { [candidatId]: _, ...rest } = st.comportements; return { comportements: rest }; }),
       addEvaluation: (e) => set((st) => ({ evaluations: [e, ...st.evaluations] })),
       updateEvaluation: (id, patch) => set((st) => ({ evaluations: st.evaluations.map((e) => (e.id === id ? { ...e, ...patch } : e)) })),
       deleteEvaluation: (id) => set((st) => ({ evaluations: st.evaluations.filter((e) => e.id !== id) })),
