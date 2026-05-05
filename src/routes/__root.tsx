@@ -78,12 +78,13 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function LoginGate() {
   const login = useCirta((s) => s.login);
-  const userNom = useCirta((s) => s.user.nom);
-  const [name, setName] = useState(userNom || "MEGHERBI Nabil");
+  const [email, setEmail] = useState("admin@cirta.dz");
+  const [password, setPassword] = useState("");
+  const [err, setErr] = useState("");
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) return;
-    login(name.trim());
+    const r = login(email, password);
+    if (!r.ok) setErr(r.error || "Erreur de connexion");
   };
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -91,15 +92,21 @@ function LoginGate() {
         <CardHeader className="items-center text-center">
           <img src={logo} alt="CIRTA" className="h-16 w-16 rounded-md bg-muted object-contain p-2" />
           <CardTitle className="mt-2">CIRTA Recruitment Assistant</CardTitle>
-          <p className="text-xs text-muted-foreground">Connexion locale — sécurisée par le poste</p>
+          <p className="text-xs text-muted-foreground">Connexion sécurisée par mot de passe</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={submit} className="space-y-3">
             <div>
-              <Label>Votre nom</Label>
-              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="MEGHERBI Nabil" autoFocus />
+              <Label>Email</Label>
+              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="admin@cirta.dz" autoFocus />
             </div>
+            <div>
+              <Label>Mot de passe</Label>
+              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
+            </div>
+            {err && <p className="text-xs text-destructive">{err}</p>}
             <Button type="submit" className="w-full"><LogIn className="mr-2 h-4 w-4" /> Se connecter</Button>
+            <p className="text-[10px] text-muted-foreground text-center">Admin par défaut : admin@cirta.dz / admin</p>
           </form>
         </CardContent>
       </Card>
