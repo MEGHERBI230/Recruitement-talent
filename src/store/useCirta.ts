@@ -105,6 +105,24 @@ export const EVAL_LABELS: Record<EvaluationType, string> = {
 
 interface AuthState { isLoggedIn: boolean; displayName: string }
 
+export interface AISettings {
+  ollamaUrl: string;
+  ollamaModel: string;
+  preferLocal: boolean;
+  fallbackToCloud: boolean;
+}
+export interface AIUsage {
+  local: number;
+  cloud: number;
+  lastReset: string;
+}
+export const DEFAULT_AI_SETTINGS: AISettings = {
+  ollamaUrl: "http://localhost:11434",
+  ollamaModel: "llama3.1",
+  preferLocal: true,
+  fallbackToCloud: true,
+};
+
 interface State {
   candidats: CandidatExt[];
   postes: Poste[];
@@ -115,6 +133,8 @@ interface State {
   evaluations: EvaluationData[];
   user: UserProfile;
   auth: AuthState;
+  aiSettings: AISettings;
+  aiUsage: AIUsage;
   setStatut: (id: string, s: CandidatStatut) => void;
   setScore: (id: string, score: number) => void;
   updateCandidat: (id: string, patch: Partial<CandidatExt>) => void;
