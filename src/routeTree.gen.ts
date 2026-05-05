@@ -35,6 +35,11 @@ const UtilisateursRoute = UtilisateursRouteImport.update({
   path: '/utilisateurs',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UtilisateursRoute = UtilisateursRouteImport.update({
+  id: '/utilisateurs',
+  path: '/utilisateurs',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RedemarrageRoute = RedemarrageRouteImport.update({
   id: '/redemarrage',
   path: '/redemarrage',
