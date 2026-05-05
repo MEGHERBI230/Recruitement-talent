@@ -257,6 +257,7 @@ interface State {
   employes: Employe[];
   user: UserProfile;
   auth: AuthState;
+  users: AppUser[];
   aiSettings: AISettings;
   aiUsage: AIUsage;
   setStatut: (id: string, s: CandidatStatut) => void;
@@ -284,8 +285,11 @@ interface State {
   desactiverEmploye: (id: string) => void;
   employeFromCandidat: (candidatId: string) => string | null;
   updateUser: (patch: Partial<UserProfile>) => void;
-  login: (displayName: string) => void;
+  login: (email: string, password: string) => { ok: boolean; error?: string };
   logout: () => void;
+  addAppUser: (u: Omit<AppUser, "id" | "createdAt" | "actif"> & { actif?: boolean }) => { ok: boolean; error?: string };
+  updateAppUser: (id: string, patch: Partial<AppUser>) => void;
+  deleteAppUser: (id: string) => void;
   updateAISettings: (patch: Partial<AISettings>) => void;
   bumpAIUsage: (provider: "local" | "cloud") => void;
   resetAIUsage: () => void;
@@ -301,7 +305,15 @@ const defaultUser: UserProfile = {
   weights: DEFAULT_WEIGHTS,
 };
 
-const seedExt: CandidatExt[] = [];
+const ADMIN_SEED: AppUser = {
+  id: "admin-megherbi",
+  nom: "MEGHERBI Nabil",
+  email: "admin@cirta.dz",
+  password: "admin",
+  role: "admin",
+  actif: true,
+  createdAt: new Date().toISOString(),
+};
 
 export const useCirta = create<State>()(
   persist(
