@@ -5,10 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useCirta, DEFAULT_WEIGHTS, type ScoreWeights } from "@/store/useCirta";
+import { useCirta, DEFAULT_WEIGHTS, DEFAULT_AI_SETTINGS, type ScoreWeights, type AISettings } from "@/store/useCirta";
 import { POSTES, MACHINES } from "@/data/cirta";
 import { toast } from "sonner";
-import { RotateCcw, Save, Upload, Trash2 } from "lucide-react";
+import { RotateCcw, Save, Upload, Trash2, HardDrive, Cloud, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { AIUsageBadge } from "@/components/AIControls";
+import { pingOllama } from "@/lib/ai-client";
+import { Switch } from "@/components/ui/switch";
 import { z } from "zod";
 
 export const Route = createFileRoute("/parametres")({ component: Parametres });
@@ -24,9 +27,27 @@ function Parametres() {
   const reset = useCirta((s) => s.reset);
   const user = useCirta((s) => s.user);
   const updateUser = useCirta((s) => s.updateUser);
+  const aiSettings = useCirta((s) => s.aiSettings);
+  const updateAISettings = useCirta((s) => s.updateAISettings);
+  const resetAIUsage = useCirta((s) => s.resetAIUsage);
   const [form, setForm] = useState({ nom: user.nom, fonction: user.fonction, email: user.email, telephone: user.telephone });
   const [weights, setWeights] = useState<ScoreWeights>(user.weights ?? DEFAULT_WEIGHTS);
+  const [ai, setAi] = useState<AISettings>(aiSettings);
+  const [pingState, setPingState] = useState<{ loading: boolean; ok?: boolean; models?: string[]; error?: string }>({ loading: false });
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const testOllama = async () => {
+    setPingState({ loading: true });
+    const r = await pingOllama(ai.ollamaUrl);
+    setPingState({ loading: false, ...r });
+    if (r.ok) toast.success(`Ollama joignable — ${r.models?.length ?? 0} modèle(s)`);
+    else toast.error(`Ollama injoignable : ${r.error}`);
+  };
+
+  const saveAI = () => {
+    updateAISettings(ai);
+    toast.success("Paramètres IA enregistrés");
+  };
 
   const save = () => {
     const r = profilSchema.safeParse(form);
