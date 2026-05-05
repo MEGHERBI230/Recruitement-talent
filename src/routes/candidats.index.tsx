@@ -141,8 +141,10 @@ function CandidatsPage() {
                 </DialogFooter>
               </DialogContent>
             </Dialog>
-            <Button variant="outline" onClick={() => toast.info("Import CV PDF disponible en V2")}>
-              <Upload className="mr-2 h-4 w-4" /> Importer CV
+            <input ref={fileRef} type="file" accept=".pdf,.docx,.txt,application/pdf,text/plain" multiple className="hidden" onChange={(e) => onFiles(e.target.files)} />
+            <Button variant="outline" disabled={importing} onClick={() => fileRef.current?.click()}>
+              {importing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+              {importing ? "Import en cours..." : "Importer CV"}
             </Button>
           </>
         }
