@@ -209,7 +209,24 @@ export const EVAL_LABELS: Record<EvaluationType, string> = {
   cdd_to_cdi: "Passage CDD → CDI",
 };
 
-interface AuthState { isLoggedIn: boolean; displayName: string }
+export type UserRole = "admin" | "user";
+export interface AppUser {
+  id: string;
+  nom: string;
+  email: string;
+  password: string;
+  role: UserRole;
+  actif: boolean;
+  createdAt: string;
+  lastLoginAt?: string;
+}
+interface AuthState {
+  isLoggedIn: boolean;
+  displayName: string;
+  userId?: string;
+  role?: UserRole;
+  loginAt?: string;
+}
 
 export interface AISettings {
   ollamaUrl: string;
@@ -240,6 +257,7 @@ interface State {
   employes: Employe[];
   user: UserProfile;
   auth: AuthState;
+  users: AppUser[];
   aiSettings: AISettings;
   aiUsage: AIUsage;
   setStatut: (id: string, s: CandidatStatut) => void;
@@ -267,8 +285,11 @@ interface State {
   desactiverEmploye: (id: string) => void;
   employeFromCandidat: (candidatId: string) => string | null;
   updateUser: (patch: Partial<UserProfile>) => void;
-  login: (displayName: string) => void;
+  login: (email: string, password: string) => { ok: boolean; error?: string };
   logout: () => void;
+  addAppUser: (u: Omit<AppUser, "id" | "createdAt" | "actif"> & { actif?: boolean }) => { ok: boolean; error?: string };
+  updateAppUser: (id: string, patch: Partial<AppUser>) => void;
+  deleteAppUser: (id: string) => void;
   updateAISettings: (patch: Partial<AISettings>) => void;
   bumpAIUsage: (provider: "local" | "cloud") => void;
   resetAIUsage: () => void;
@@ -282,6 +303,16 @@ const defaultUser: UserProfile = {
   telephone: "",
   signature: undefined,
   weights: DEFAULT_WEIGHTS,
+};
+
+const ADMIN_SEED: AppUser = {
+  id: "admin-megherbi",
+  nom: "MEGHERBI Nabil",
+  email: "admin@cirta.dz",
+  password: "admin",
+  role: "admin",
+  actif: true,
+  createdAt: new Date().toISOString(),
 };
 
 const seedExt: CandidatExt[] = [];
@@ -299,6 +330,7 @@ export const useCirta = create<State>()(
       employes: [],
       user: defaultUser,
       auth: { isLoggedIn: false, displayName: "" },
+      users: [ADMIN_SEED],
       aiSettings: DEFAULT_AI_SETTINGS,
       aiUsage: { local: 0, cloud: 0, lastReset: new Date().toISOString() },
       setStatut: (id, s) => set((st) => ({ candidats: st.candidats.map((c) => (c.id === id ? { ...c, statut: s } : c)) })),
@@ -375,13 +407,54 @@ export const useCirta = create<State>()(
         return newId;
       },
       updateUser: (patch) => set((st) => ({ user: { ...st.user, ...patch } })),
-      login: (displayName) => set(() => ({ auth: { isLoggedIn: true, displayName } })),
+      login: (email, password) => {
+        const e = email.trim().toLowerCase();
+        let result: { ok: boolean; error?: string } = { ok: false, error: "Identifiants invalides" };
+        set((st) => {
+          // Auto-seed admin if missing (handles persisted state without admin)
+          let users = st.users && st.users.length ? st.users : [ADMIN_SEED];
+          if (!users.find((u) => u.email.toLowerCase() === ADMIN_SEED.email)) {
+            users = [ADMIN_SEED, ...users];
+          }
+          const u = users.find((x) => x.email.toLowerCase() === e && x.password === password);
+          if (!u) return { users };
+          if (!u.actif) { result = { ok: false, error: "Compte désactivé" }; return { users }; }
+          const now = new Date().toISOString();
+          result = { ok: true };
+          return {
+            users: users.map((x) => (x.id === u.id ? { ...x, lastLoginAt: now } : x)),
+            auth: { isLoggedIn: true, displayName: u.nom, userId: u.id, role: u.role, loginAt: now },
+          };
+        });
+        return result;
+      },
       logout: () => set(() => ({ auth: { isLoggedIn: false, displayName: "" } })),
+      addAppUser: (u) => {
+        let result: { ok: boolean; error?: string } = { ok: true };
+        set((st) => {
+          const email = u.email.trim().toLowerCase();
+          if (!email || !u.password || !u.nom) { result = { ok: false, error: "Champs requis manquants" }; return {}; }
+          if (st.users.find((x) => x.email.toLowerCase() === email)) { result = { ok: false, error: "Email déjà utilisé" }; return {}; }
+          const newUser: AppUser = {
+            id: `usr-${Date.now()}`,
+            nom: u.nom,
+            email,
+            password: u.password,
+            role: u.role,
+            actif: u.actif ?? true,
+            createdAt: new Date().toISOString(),
+          };
+          return { users: [...st.users, newUser] };
+        });
+        return result;
+      },
+      updateAppUser: (id, patch) => set((st) => ({ users: st.users.map((u) => (u.id === id ? { ...u, ...patch } : u)) })),
+      deleteAppUser: (id) => set((st) => ({ users: st.users.filter((u) => u.id !== id) })),
       updateAISettings: (patch) => set((st) => ({ aiSettings: { ...st.aiSettings, ...patch } })),
       bumpAIUsage: (provider) => set((st) => ({ aiUsage: { ...st.aiUsage, [provider]: st.aiUsage[provider] + 1 } })),
       resetAIUsage: () => set(() => ({ aiUsage: { local: 0, cloud: 0, lastReset: new Date().toISOString() } })),
       reset: () => set((st) => ({ candidats: seedExt, postes: POSTES, machines: MACHINES as MachineExt[], entretiens: {}, tests: {}, comportements: {}, evaluations: [], employes: [], user: defaultUser, aiSettings: st.aiSettings, aiUsage: st.aiUsage })),
     }),
-    { name: "cirta-store-v7" },
+    { name: "cirta-store-v8" },
   ),
 );

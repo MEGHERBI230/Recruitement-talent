@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UtilisateursRouteImport } from './routes/utilisateurs'
 import { Route as RedemarrageRouteImport } from './routes/redemarrage'
 import { Route as PostesRouteImport } from './routes/postes'
 import { Route as ParametresRouteImport } from './routes/parametres'
@@ -28,6 +29,11 @@ import { Route as EntretiensIdRouteImport } from './routes/entretiens.$id'
 import { Route as ComportementIdRouteImport } from './routes/comportement.$id'
 import { Route as CandidatsIdRouteImport } from './routes/candidats.$id'
 
+const UtilisateursRoute = UtilisateursRouteImport.update({
+  id: '/utilisateurs',
+  path: '/utilisateurs',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RedemarrageRoute = RedemarrageRouteImport.update({
   id: '/redemarrage',
   path: '/redemarrage',
@@ -126,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/parametres': typeof ParametresRoute
   '/postes': typeof PostesRoute
   '/redemarrage': typeof RedemarrageRoute
+  '/utilisateurs': typeof UtilisateursRoute
   '/candidats/$id': typeof CandidatsIdRoute
   '/comportement/$id': typeof ComportementIdRoute
   '/entretiens/$id': typeof EntretiensIdRoute
@@ -146,6 +153,7 @@ export interface FileRoutesByTo {
   '/parametres': typeof ParametresRoute
   '/postes': typeof PostesRoute
   '/redemarrage': typeof RedemarrageRoute
+  '/utilisateurs': typeof UtilisateursRoute
   '/candidats/$id': typeof CandidatsIdRoute
   '/comportement/$id': typeof ComportementIdRoute
   '/entretiens/$id': typeof EntretiensIdRoute
@@ -167,6 +175,7 @@ export interface FileRoutesById {
   '/parametres': typeof ParametresRoute
   '/postes': typeof PostesRoute
   '/redemarrage': typeof RedemarrageRoute
+  '/utilisateurs': typeof UtilisateursRoute
   '/candidats/$id': typeof CandidatsIdRoute
   '/comportement/$id': typeof ComportementIdRoute
   '/entretiens/$id': typeof EntretiensIdRoute
@@ -189,6 +198,7 @@ export interface FileRouteTypes {
     | '/parametres'
     | '/postes'
     | '/redemarrage'
+    | '/utilisateurs'
     | '/candidats/$id'
     | '/comportement/$id'
     | '/entretiens/$id'
@@ -209,6 +219,7 @@ export interface FileRouteTypes {
     | '/parametres'
     | '/postes'
     | '/redemarrage'
+    | '/utilisateurs'
     | '/candidats/$id'
     | '/comportement/$id'
     | '/entretiens/$id'
@@ -229,6 +240,7 @@ export interface FileRouteTypes {
     | '/parametres'
     | '/postes'
     | '/redemarrage'
+    | '/utilisateurs'
     | '/candidats/$id'
     | '/comportement/$id'
     | '/entretiens/$id'
@@ -250,6 +262,7 @@ export interface RootRouteChildren {
   ParametresRoute: typeof ParametresRoute
   PostesRoute: typeof PostesRoute
   RedemarrageRoute: typeof RedemarrageRoute
+  UtilisateursRoute: typeof UtilisateursRoute
   CandidatsIdRoute: typeof CandidatsIdRoute
   ComportementIdRoute: typeof ComportementIdRoute
   EntretiensIdRoute: typeof EntretiensIdRoute
@@ -266,6 +279,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/utilisateurs': {
+      id: '/utilisateurs'
+      path: '/utilisateurs'
+      fullPath: '/utilisateurs'
+      preLoaderRoute: typeof UtilisateursRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/redemarrage': {
       id: '/redemarrage'
       path: '/redemarrage'
@@ -402,6 +422,7 @@ const rootRouteChildren: RootRouteChildren = {
   ParametresRoute: ParametresRoute,
   PostesRoute: PostesRoute,
   RedemarrageRoute: RedemarrageRoute,
+  UtilisateursRoute: UtilisateursRoute,
   CandidatsIdRoute: CandidatsIdRoute,
   ComportementIdRoute: ComportementIdRoute,
   EntretiensIdRoute: EntretiensIdRoute,
