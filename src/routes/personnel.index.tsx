@@ -197,6 +197,22 @@ function PersonnelList() {
           </Table>
         </CardContent>
       </Card>
+
+      <AlertDialog open={!!delId} onOpenChange={(o) => !o && setDelId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Désactiver cet employé ?</AlertDialogTitle>
+            <AlertDialogDescription>L'employé sera marqué inactif (suppression logique). Son historique reste consultable.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => { if (delId) { desactiverEmploye(delId); toast.success("Employé désactivé"); setDelId(null); } }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >Désactiver</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
