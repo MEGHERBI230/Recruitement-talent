@@ -315,6 +315,8 @@ const ADMIN_SEED: AppUser = {
   createdAt: new Date().toISOString(),
 };
 
+const seedExt: CandidatExt[] = [];
+
 export const useCirta = create<State>()(
   persist(
     (set) => ({
