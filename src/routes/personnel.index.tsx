@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { printPage } from "@/lib/print";
+import { ImportButton } from "@/components/ImportButton";
+import { importPersonnel } from "@/lib/import-xlsx";
 
 export const Route = createFileRoute("/personnel/")({ component: PersonnelList });
 
@@ -95,6 +97,12 @@ function PersonnelList() {
         actions={
           <>
             <Button variant="outline" onClick={printPage}><Printer className="mr-2 h-4 w-4" /> Imprimer</Button>
+            <ImportButton onFile={async (f) => {
+              const { result, employes: imported } = await importPersonnel(f);
+              imported.forEach((e) => addEmploye(e));
+              toast.success(`${result.added} employé(s) importé(s)${result.skipped ? `, ${result.skipped} ignoré(s)` : ""}`);
+              result.errors.slice(0, 3).forEach((er) => toast.error(er));
+            }} label="Importer personnel" />
             <Button onClick={newEmploye}><UserPlus className="mr-2 h-4 w-4" /> Nouvel employé</Button>
           </>
         }
