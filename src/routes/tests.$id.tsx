@@ -39,7 +39,7 @@ function TestPage() {
   const generer = async () => {
     setLoading(true);
     try {
-      const res = await generatePracticalTest({ data: { poste: candidat.posteVise, bu: candidat.bu, machines: poste?.machines, competences: poste?.competences } });
+      const res = await runAI("generatePracticalTest", { poste: candidat.posteVise, bu: candidat.bu, machines: poste?.machines, competences: poste?.competences }, { provider });
       const next: TestData = { candidatId: id, date: new Date().toISOString(), test: res };
       save(next);
       toast.success("Test pratique généré");
@@ -59,9 +59,7 @@ function TestPage() {
     if (!data?.test) return;
     setAnalyzing(true);
     try {
-      const a = await analyzePracticalTest({
-        data: { poste: candidat.posteVise, consigne: data.test.consigne, criteres: data.test.criteres, observations, photos, scanReponses: scan },
-      });
+      const a = await runAI("analyzePracticalTest", { poste: candidat.posteVise, consigne: data.test.consigne, criteres: data.test.criteres, observations, photos, scanReponses: scan }, { provider });
       save({ candidatId: id, observations, photos, scanReponses: scan, analyse: a, scoreGlobal: a.total });
       setScore(id, a.total);
       toast.success(`Test évalué — ${a.total}/100 (${a.verdict})`);

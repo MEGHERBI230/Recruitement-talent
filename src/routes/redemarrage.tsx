@@ -41,8 +41,7 @@ function Redemarrage() {
       const postes = POSTES.filter((p) => p.bu === bu);
       const machines = MACHINES.filter((m) => m.bu === bu);
       const cands = candidats.filter((c) => c.bu === bu);
-      const res = await planRestart({
-        data: {
+      const res = await runAI("planRestart", {
           bu,
           buLabel: BU_LABELS[bu],
           objectif,
@@ -52,8 +51,7 @@ function Redemarrage() {
           })),
           machinesEtat: machines.map((m) => ({ nom: m.nom, etat: m.etat, criticite: m.criticite })),
           candidatsDisponibles: cands.map((c) => ({ posteVise: c.posteVise, score: c.score, statut: c.statut })),
-        },
-      });
+        }, { provider });
       setPlan(res);
       toast.success("Plan de redémarrage généré");
     } catch (e: any) {

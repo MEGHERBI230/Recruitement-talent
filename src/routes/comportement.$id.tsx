@@ -36,7 +36,7 @@ function ComptPage() {
   const generer = async () => {
     setLoading(true);
     try {
-      const res = await generateBehaviorTest({ data: { poste: candidat.posteVise, bu: candidat.bu } });
+      const res = await runAI("generateBehaviorTest", { poste: candidat.posteVise, bu: candidat.bu }, { provider });
       const next: ComportementData = { candidatId: id, date: new Date().toISOString(), questions: res.questions, reponses: Array(res.questions.length).fill("") };
       save(next);
       setReponses(next.reponses!);
@@ -52,7 +52,7 @@ function ComptPage() {
     setAnalyzing(true);
     try {
       const qa = data.questions.map((q, i) => ({ ...q, reponse: reponses[i] ?? "" }));
-      const a = await analyzeBehavior({ data: { poste: candidat.posteVise, qa, scanReponses: scan } });
+      const a = await runAI("analyzeBehavior", { poste: candidat.posteVise, qa, scanReponses: scan }, { provider });
       save({ candidatId: id, reponses, scanReponses: scan, analyse: a, scoreGlobal: a.score });
       setScore(id, a.score);
       toast.success(`Comportemental évalué — ${a.score}/100`);

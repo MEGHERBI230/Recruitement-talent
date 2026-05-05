@@ -57,8 +57,7 @@ function EvaluationsPage() {
     const poste = POSTES.find((p) => p.intitule === c.posteVise);
     setGenLoading(true);
     try {
-      const res = await generateRhEvaluation({
-        data: {
+      const res = await runAI<{ questions: any[] }>("generateRhEvaluation", {
           type: form.type,
           poste: c.posteVise,
           bu: c.bu,
@@ -66,8 +65,7 @@ function EvaluationsPage() {
           competences: poste?.competences,
           machines: poste?.machines,
           moisAnciennete: form.mois,
-        },
-      });
+        }, { provider });
       const id = `ev${Date.now()}`;
       const evalData: EvaluationData = {
         id,
@@ -103,9 +101,7 @@ function EvaluationsPage() {
         question: q.question, objectif: q.objectif, bareme: q.bareme,
         note: active.notes[i]?.note ?? 0, commentaire: active.notes[i]?.commentaire ?? "",
       }));
-      const res = await analyzeRhEvaluation({
-        data: { type: active.type, poste: activeCandidat.posteVise, items, observationsTerrain: active.observationsTerrain },
-      });
+      const res = await runAI("analyzeRhEvaluation", { type: active.type, poste: activeCandidat.posteVise, items, observationsTerrain: active.observationsTerrain }, { provider });
       updateEvaluation(active.id, { analyse: res });
       toast.success(`Analyse IA — ${res.verdict} (${res.scoreGlobal}/100)`);
     } catch (e: any) {

@@ -34,16 +34,14 @@ function EntretienPage() {
   const generer = async () => {
     setLoading(true);
     try {
-      const res = await generateInterview({
-        data: {
+      const res = await runAI("generateInterview", {
           poste: candidat.posteVise,
           bu: candidat.bu,
           experience: poste?.experienceMin ?? candidat.experience,
           diplome: poste?.diplome ?? candidat.diplome,
           competences: poste?.competences,
           machines: poste?.machines,
-        },
-      });
+        }, { provider });
       const next: EntretienData = { candidatId: id, date: new Date().toISOString(), questions: res.questions, reponses: Array(res.questions.length).fill("") };
       save(next);
       setReponses(next.reponses!);
@@ -63,7 +61,7 @@ function EntretienPage() {
     setAnalyzing(true);
     try {
       const qa = data.questions.map((q, i) => ({ question: q.question, reponse: reponses[i] ?? "" }));
-      const a = await analyzeInterview({ data: { poste: candidat.posteVise, qa } });
+      const a = await runAI("analyzeInterview", { poste: candidat.posteVise, qa }, { provider });
       save({ candidatId: id, reponses, analyse: a, scoreGlobal: a.score });
       setScore(id, a.score);
       toast.success(`Entretien évalué — ${a.score}/100 (${a.recommandation})`);
