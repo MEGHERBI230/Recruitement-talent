@@ -246,6 +246,7 @@ interface State {
   setScore: (id: string, score: number) => void;
   updateCandidat: (id: string, patch: Partial<CandidatExt>) => void;
   addCandidat: (c: CandidatExt) => void;
+  deleteCandidat: (id: string) => void;
   addPoste: (p: Poste) => void;
   updatePoste: (id: string, patch: Partial<Poste>) => void;
   deletePoste: (id: string) => void;
@@ -301,6 +302,15 @@ export const useCirta = create<State>()(
       setScore: (id, score) => set((st) => ({ candidats: st.candidats.map((c) => (c.id === id ? { ...c, score } : c)) })),
       updateCandidat: (id, patch) => set((st) => ({ candidats: st.candidats.map((c) => (c.id === id ? { ...c, ...patch } : c)) })),
       addCandidat: (c) => set((st) => ({ candidats: [c, ...st.candidats] })),
+      deleteCandidat: (id) => set((st) => {
+        const { [id]: _e, ...entretiens } = st.entretiens;
+        const { [id]: _t, ...tests } = st.tests;
+        const { [id]: _c, ...comportements } = st.comportements;
+        return {
+          candidats: st.candidats.filter((c) => c.id !== id),
+          entretiens, tests, comportements,
+        };
+      }),
       addPoste: (p) => set((st) => ({ postes: [p, ...st.postes] })),
       updatePoste: (id, patch) => set((st) => ({ postes: st.postes.map((p) => (p.id === id ? { ...p, ...patch } : p)) })),
       deletePoste: (id) => set((st) => ({ postes: st.postes.filter((p) => p.id !== id) })),
