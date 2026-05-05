@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useCirta, type UserRole } from "@/store/useCirta";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
