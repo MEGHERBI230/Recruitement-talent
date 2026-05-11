@@ -57,6 +57,7 @@ function PostesPage() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<FormState>(EMPTY);
   const [delId, setDelId] = useState<string | null>(null);
+  const [detailPrint, setDetailPrint] = useState(false);
 
   const filtered = postes.filter(
     (p) =>
