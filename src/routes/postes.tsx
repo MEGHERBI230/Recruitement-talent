@@ -113,6 +113,7 @@ function PostesPage() {
 
   return (
     <div className="mx-auto max-w-7xl">
+      <div className="print:hidden">
       <PageHeader
         title="Postes"
         subtitle={`${postes.length} intitulés — ${postes.reduce((s, p) => s + p.quantite, 0)} postes à pourvoir`}
@@ -129,6 +130,7 @@ function PostesPage() {
           </>
         }
       />
+      </div>
 
       <Letterhead title="Liste des postes à pourvoir" subtitle={`${postes.length} intitulés — ${postes.reduce((s, p) => s + p.quantite, 0)} postes au total`} />
 
