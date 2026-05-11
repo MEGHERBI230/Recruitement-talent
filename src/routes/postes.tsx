@@ -57,6 +57,7 @@ function PostesPage() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<FormState>(EMPTY);
   const [delId, setDelId] = useState<string | null>(null);
+  const [detailPrint, setDetailPrint] = useState(false);
 
   const filtered = postes.filter(
     (p) =>
@@ -119,7 +120,8 @@ function PostesPage() {
         subtitle={`${postes.length} intitulés — ${postes.reduce((s, p) => s + p.quantite, 0)} postes à pourvoir`}
         actions={
           <>
-            <Button variant="outline" onClick={printPage}><Printer className="mr-2 h-4 w-4" /> Imprimer</Button>
+            <Button variant="outline" onClick={() => { setDetailPrint(false); setTimeout(printPage, 50); }}><Printer className="mr-2 h-4 w-4" /> Imprimer liste</Button>
+            <Button variant="outline" onClick={() => { setDetailPrint(true); setTimeout(() => { printPage(); setTimeout(() => setDetailPrint(false), 500); }, 100); }}><Printer className="mr-2 h-4 w-4" /> Imprimer détaillé</Button>
             <ImportButton onFile={async (f) => {
               const { result, postes: imported } = await importPostes(f);
               imported.forEach((p) => addPoste(p));
@@ -157,7 +159,7 @@ function PostesPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className={detailPrint ? "print:hidden" : ""}>
         <CardContent className="p-0">
           <Table>
             <TableHeader>
@@ -195,6 +197,41 @@ function PostesPage() {
           </Table>
         </CardContent>
       </Card>
+
+      {detailPrint && (
+        <div className="hidden print:block">
+          {filtered.map((p, idx) => (
+            <section key={p.id} className={"mb-6 " + (idx > 0 ? "print-break" : "")}>
+              <h2 className="text-xl font-bold border-b border-black pb-1 mb-3">
+                {idx + 1}. {p.intitule}
+              </h2>
+              <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                <div><span className="font-semibold">Business Unit :</span> {BU_LABELS[p.bu]} ({p.bu})</div>
+                <div><span className="font-semibold">Priorité :</span> {PRIORITY_LABELS[p.priorite].label}</div>
+                <div><span className="font-semibold">Quantité à pourvoir :</span> {p.quantite}</div>
+                <div><span className="font-semibold">Expérience minimale :</span> {p.experienceMin} ans</div>
+                <div className="col-span-2"><span className="font-semibold">Diplôme requis :</span> {p.diplome}</div>
+                <div className="col-span-2">
+                  <div className="font-semibold">Compétences clés :</div>
+                  <div>{p.competences.join(", ") || "—"}</div>
+                </div>
+                <div className="col-span-2">
+                  <div className="font-semibold">Hard skills (savoir-faire) :</div>
+                  <div>{(p.hardSkills ?? []).join(", ") || "—"}</div>
+                </div>
+                <div className="col-span-2">
+                  <div className="font-semibold">Soft skills (savoir-être) :</div>
+                  <div>{(p.softSkills ?? []).join(", ") || "—"}</div>
+                </div>
+                <div className="col-span-2">
+                  <div className="font-semibold">Machines liées :</div>
+                  <div>{p.machines.length ? p.machines.join(", ") : "—"}</div>
+                </div>
+              </div>
+            </section>
+          ))}
+        </div>
+      )}
 
       <LetterheadFooter />
 
