@@ -194,6 +194,8 @@ function PostesPage() {
         </CardContent>
       </Card>
 
+      <LetterheadFooter />
+
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>{editId ? "Modifier le poste" : "Nouveau poste"}</DialogTitle></DialogHeader>
