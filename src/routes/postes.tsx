@@ -159,7 +159,7 @@ function PostesPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className={detailPrint ? "print:hidden" : ""}>
         <CardContent className="p-0">
           <Table>
             <TableHeader>
@@ -197,6 +197,41 @@ function PostesPage() {
           </Table>
         </CardContent>
       </Card>
+
+      {detailPrint && (
+        <div className="hidden print:block">
+          {filtered.map((p, idx) => (
+            <section key={p.id} className={"mb-6 " + (idx > 0 ? "print-break" : "")}>
+              <h2 className="text-xl font-bold border-b border-black pb-1 mb-3">
+                {idx + 1}. {p.intitule}
+              </h2>
+              <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                <div><span className="font-semibold">Business Unit :</span> {BU_LABELS[p.bu]} ({p.bu})</div>
+                <div><span className="font-semibold">Priorité :</span> {PRIORITY_LABELS[p.priorite].label}</div>
+                <div><span className="font-semibold">Quantité à pourvoir :</span> {p.quantite}</div>
+                <div><span className="font-semibold">Expérience minimale :</span> {p.experienceMin} ans</div>
+                <div className="col-span-2"><span className="font-semibold">Diplôme requis :</span> {p.diplome}</div>
+                <div className="col-span-2">
+                  <div className="font-semibold">Compétences clés :</div>
+                  <div>{p.competences.join(", ") || "—"}</div>
+                </div>
+                <div className="col-span-2">
+                  <div className="font-semibold">Hard skills (savoir-faire) :</div>
+                  <div>{(p.hardSkills ?? []).join(", ") || "—"}</div>
+                </div>
+                <div className="col-span-2">
+                  <div className="font-semibold">Soft skills (savoir-être) :</div>
+                  <div>{(p.softSkills ?? []).join(", ") || "—"}</div>
+                </div>
+                <div className="col-span-2">
+                  <div className="font-semibold">Machines liées :</div>
+                  <div>{p.machines.length ? p.machines.join(", ") : "—"}</div>
+                </div>
+              </div>
+            </section>
+          ))}
+        </div>
+      )}
 
       <LetterheadFooter />
 
