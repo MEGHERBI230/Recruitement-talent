@@ -154,11 +154,21 @@
 /* Print styles for professional reports */
 .print-only { display: none; }
 @media print {
-  @page { size: A4 landscape; margin: 12mm; }
-  body { background: white !important; }
+  /* margin:0 supprime les en-têtes/pieds par défaut du navigateur (URL, date, n° page) */
+  @page { size: A4 landscape; margin: 0; }
+  html, body { background: white !important; margin: 0 !important; }
+  body { padding: 10mm 12mm 10mm 12mm !important; }
   [data-sidebar], header.sticky, .no-print { display: none !important; }
   main { padding: 0 !important; }
   .print-area { box-shadow: none !important; }
   .print-break { page-break-before: always; }
   .print-only { display: block !important; }
+  /* Réserver la place pour la signature en bas de la dernière page */
+  .print-footer { page-break-inside: avoid; margin-top: 20mm; }
+  /* Eviter de couper les lignes du tableau */
+  table { page-break-inside: auto; }
+  tr { page-break-inside: avoid; page-break-after: auto; }
+  thead { display: table-header-group; }
+  /* Phrase masquée (police blanche) si jamais l'URL apparaît */
+  .print-hide-url { color: white !important; background: white !important; }
 }
