@@ -17,7 +17,9 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Plus, Search, Pencil, Trash2, X } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, X, Printer } from "lucide-react";
+import { printPage } from "@/lib/print";
+import { Letterhead, LetterheadFooter } from "@/components/Letterhead";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
@@ -116,6 +118,7 @@ function PostesPage() {
         subtitle={`${postes.length} intitulés — ${postes.reduce((s, p) => s + p.quantite, 0)} postes à pourvoir`}
         actions={
           <>
+            <Button variant="outline" onClick={printPage}><Printer className="mr-2 h-4 w-4" /> Imprimer</Button>
             <ImportButton onFile={async (f) => {
               const { result, postes: imported } = await importPostes(f);
               imported.forEach((p) => addPoste(p));
@@ -127,7 +130,9 @@ function PostesPage() {
         }
       />
 
-      <Card className="mb-4">
+      <Letterhead title="Liste des postes à pourvoir" subtitle={`${postes.length} intitulés — ${postes.reduce((s, p) => s + p.quantite, 0)} postes au total`} />
+
+      <Card className="mb-4 print:hidden">
         <CardContent className="flex flex-wrap items-center gap-3 p-4">
           <div className="relative min-w-[220px] flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -162,7 +167,7 @@ function PostesPage() {
                 <TableHead>Expérience</TableHead>
                 <TableHead>Diplôme</TableHead>
                 <TableHead>Compétences clés</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="text-right print:hidden">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -175,7 +180,7 @@ function PostesPage() {
                   <TableCell>{p.experienceMin} ans</TableCell>
                   <TableCell className="text-sm text-muted-foreground">{p.diplome}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">{p.competences.slice(0, 3).join(", ")}</TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right print:hidden">
                     <Button size="sm" variant="ghost" onClick={() => openEdit(p)}><Pencil className="h-4 w-4" /></Button>
                     <Button size="sm" variant="ghost" onClick={() => setDelId(p.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                   </TableCell>
@@ -188,6 +193,8 @@ function PostesPage() {
           </Table>
         </CardContent>
       </Card>
+
+      <LetterheadFooter />
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
