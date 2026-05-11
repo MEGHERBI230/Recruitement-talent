@@ -17,7 +17,9 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Plus, Search, Pencil, Trash2, X } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, X, Printer } from "lucide-react";
+import { printPage } from "@/lib/print";
+import { Letterhead, LetterheadFooter } from "@/components/Letterhead";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
