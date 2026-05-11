@@ -180,7 +180,7 @@ function PostesPage() {
                   <TableCell>{p.experienceMin} ans</TableCell>
                   <TableCell className="text-sm text-muted-foreground">{p.diplome}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">{p.competences.slice(0, 3).join(", ")}</TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right print:hidden">
                     <Button size="sm" variant="ghost" onClick={() => openEdit(p)}><Pencil className="h-4 w-4" /></Button>
                     <Button size="sm" variant="ghost" onClick={() => setDelId(p.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                   </TableCell>
