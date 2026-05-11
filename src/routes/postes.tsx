@@ -58,6 +58,16 @@ function PostesPage() {
   const [form, setForm] = useState<FormState>(EMPTY);
   const [delId, setDelId] = useState<string | null>(null);
   const [detailPrint, setDetailPrint] = useState(false);
+  const [printOneId, setPrintOneId] = useState<string | null>(null);
+
+  const printPoste = (id: string) => {
+    setPrintOneId(id);
+    setDetailPrint(true);
+    setTimeout(() => {
+      printPage();
+      setTimeout(() => { setDetailPrint(false); setPrintOneId(null); }, 500);
+    }, 100);
+  };
 
   const filtered = postes.filter(
     (p) =>
@@ -121,7 +131,7 @@ function PostesPage() {
         actions={
           <>
             <Button variant="outline" onClick={() => { setDetailPrint(false); setTimeout(printPage, 50); }}><Printer className="mr-2 h-4 w-4" /> Imprimer liste</Button>
-            <Button variant="outline" onClick={() => { setDetailPrint(true); setTimeout(() => { printPage(); setTimeout(() => setDetailPrint(false), 500); }, 100); }}><Printer className="mr-2 h-4 w-4" /> Imprimer détaillé</Button>
+            <Button variant="outline" onClick={() => { setPrintOneId(null); setDetailPrint(true); setTimeout(() => { printPage(); setTimeout(() => setDetailPrint(false), 500); }, 100); }}><Printer className="mr-2 h-4 w-4" /> Imprimer tous détaillés</Button>
             <ImportButton onFile={async (f) => {
               const { result, postes: imported } = await importPostes(f);
               imported.forEach((p) => addPoste(p));
@@ -185,6 +195,7 @@ function PostesPage() {
                   <TableCell className="text-sm text-muted-foreground">{p.diplome}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">{p.competences.slice(0, 3).join(", ")}</TableCell>
                   <TableCell className="text-right print:hidden">
+                    <Button size="sm" variant="ghost" title="Imprimer ce poste" onClick={() => printPoste(p.id)}><Printer className="h-4 w-4" /></Button>
                     <Button size="sm" variant="ghost" onClick={() => openEdit(p)}><Pencil className="h-4 w-4" /></Button>
                     <Button size="sm" variant="ghost" onClick={() => setDelId(p.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                   </TableCell>
@@ -200,7 +211,7 @@ function PostesPage() {
 
       {detailPrint && (
         <div className="hidden print:block">
-          {filtered.map((p, idx) => (
+          {(printOneId ? filtered.filter((p) => p.id === printOneId) : filtered).map((p, idx) => (
             <section key={p.id} className={"mb-6 " + (idx > 0 ? "print-break" : "")}>
               <h2 className="text-xl font-bold border-b border-black pb-1 mb-3">
                 {idx + 1}. {p.intitule}
