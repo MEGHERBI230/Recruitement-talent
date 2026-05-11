@@ -167,7 +167,7 @@ function PostesPage() {
                 <TableHead>Expérience</TableHead>
                 <TableHead>Diplôme</TableHead>
                 <TableHead>Compétences clés</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="text-right print:hidden">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
