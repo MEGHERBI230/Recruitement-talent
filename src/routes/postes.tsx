@@ -119,7 +119,8 @@ function PostesPage() {
         subtitle={`${postes.length} intitulés — ${postes.reduce((s, p) => s + p.quantite, 0)} postes à pourvoir`}
         actions={
           <>
-            <Button variant="outline" onClick={printPage}><Printer className="mr-2 h-4 w-4" /> Imprimer</Button>
+            <Button variant="outline" onClick={() => { setDetailPrint(false); setTimeout(printPage, 50); }}><Printer className="mr-2 h-4 w-4" /> Imprimer liste</Button>
+            <Button variant="outline" onClick={() => { setDetailPrint(true); setTimeout(() => { printPage(); setTimeout(() => setDetailPrint(false), 500); }, 100); }}><Printer className="mr-2 h-4 w-4" /> Imprimer détaillé</Button>
             <ImportButton onFile={async (f) => {
               const { result, postes: imported } = await importPostes(f);
               imported.forEach((p) => addPoste(p));
