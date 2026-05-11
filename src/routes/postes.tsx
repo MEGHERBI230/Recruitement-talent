@@ -118,6 +118,7 @@ function PostesPage() {
         subtitle={`${postes.length} intitulés — ${postes.reduce((s, p) => s + p.quantite, 0)} postes à pourvoir`}
         actions={
           <>
+            <Button variant="outline" onClick={printPage}><Printer className="mr-2 h-4 w-4" /> Imprimer</Button>
             <ImportButton onFile={async (f) => {
               const { result, postes: imported } = await importPostes(f);
               imported.forEach((p) => addPoste(p));
@@ -129,7 +130,9 @@ function PostesPage() {
         }
       />
 
-      <Card className="mb-4">
+      <Letterhead title="Liste des postes à pourvoir" subtitle={`${postes.length} intitulés — ${postes.reduce((s, p) => s + p.quantite, 0)} postes au total`} />
+
+      <Card className="mb-4 print:hidden">
         <CardContent className="flex flex-wrap items-center gap-3 p-4">
           <div className="relative min-w-[220px] flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
