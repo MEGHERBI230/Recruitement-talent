@@ -130,6 +130,7 @@ function PostesPage() {
           </>
         }
       />
+      </div>
 
       <Letterhead title="Liste des postes à pourvoir" subtitle={`${postes.length} intitulés — ${postes.reduce((s, p) => s + p.quantite, 0)} postes au total`} />
 
