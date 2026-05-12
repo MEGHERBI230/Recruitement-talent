@@ -70,6 +70,8 @@ export interface UserProfile {
   telephone: string;
   signature?: string; // dataURL — signature + cachet + griffe
   weights: ScoreWeights;
+  companyName?: string; // nom entreprise affiché en haut (sinon défaut générique)
+  companyLogo?: string; // dataURL logo entreprise (sinon logo générique)
 }
 
 export const DEFAULT_WEIGHTS: ScoreWeights = { competences: 40, experience: 25, diplome: 15, machines: 20 };

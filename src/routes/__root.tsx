@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LogOut, LogIn, User } from "lucide-react";
 import { AIUsageBadge } from "@/components/AIControls";
-import logo from "@/assets/logo-cirta.png";
+import { useBranding, DEFAULT_APP_NAME, DEFAULT_LOGO } from "@/lib/branding";
 
 import appCss from "../styles.css?url";
 
@@ -41,16 +41,16 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "CIRTA Recruitment Assistant" },
-      { name: "description", content: "Plateforme intelligente d'aide au recrutement industriel — CIRTA AUTOMOTIVE" },
+      { title: "Recruitment Assistant" },
+      { name: "description", content: "Plateforme intelligente d'aide au recrutement" },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "CIRTA Recruitment Assistant" },
-      { property: "og:description", content: "Plateforme intelligente d'aide au recrutement industriel — CIRTA AUTOMOTIVE" },
+      { property: "og:title", content: "Recruitment Assistant" },
+      { property: "og:description", content: "Plateforme intelligente d'aide au recrutement" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "CIRTA Recruitment Assistant" },
-      { name: "twitter:description", content: "Plateforme intelligente d'aide au recrutement industriel — CIRTA AUTOMOTIVE" },
+      { name: "twitter:title", content: "Recruitment Assistant" },
+      { name: "twitter:description", content: "Plateforme intelligente d'aide au recrutement" },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4a6c1fbc-40b0-49d5-b565-42c83d6db43d/id-preview-31bde14f--4fa4ba25-30d6-4d2c-8384-f57f0c7abb3c.lovable.app-1777990979771.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4a6c1fbc-40b0-49d5-b565-42c83d6db43d/id-preview-31bde14f--4fa4ba25-30d6-4d2c-8384-f57f0c7abb3c.lovable.app-1777990979771.png" },
     ],
@@ -94,8 +94,8 @@ function LoginGate() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="items-center text-center">
-          <img src={logo} alt="CIRTA" className="h-16 w-16 rounded-md bg-muted object-contain p-2" />
-          <CardTitle className="mt-2">CIRTA Recruitment Assistant</CardTitle>
+          <img src={DEFAULT_LOGO} alt={DEFAULT_APP_NAME} className="h-16 w-16 rounded-md bg-muted object-contain p-2" />
+          <CardTitle className="mt-2">{DEFAULT_APP_NAME}</CardTitle>
           <p className="text-xs text-muted-foreground">Connexion sécurisée par mot de passe</p>
         </CardHeader>
         <CardContent>
