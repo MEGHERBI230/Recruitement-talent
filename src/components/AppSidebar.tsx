@@ -25,7 +25,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import logo from "@/assets/logo-cirta.png";
+import { useBranding } from "@/lib/branding";
 
 const items = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
@@ -45,17 +45,20 @@ const items = [
 
 export function AppSidebar() {
   const currentPath = useRouterState({ select: (r) => r.location.pathname });
+  const { logo, companyName, appName } = useBranding();
 
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border">
         <div className="flex items-center gap-3 px-2 py-3">
-          <img src={logo} alt="CIRTA Automotive" className="h-10 w-10 rounded-md bg-background object-contain p-1" />
+          <img src={logo} alt={companyName || appName} className="h-10 w-10 rounded-md bg-background object-contain p-1" />
           <div className="flex flex-col leading-tight group-data-[collapsible=icon]:hidden">
-            <span className="text-sm font-bold text-sidebar-foreground">CIRTA</span>
-            <span className="text-[10px] uppercase tracking-wider text-sidebar-foreground/70">
-              Recruitment Assistant
-            </span>
+            <span className="text-sm font-bold text-sidebar-foreground">{companyName || appName}</span>
+            {companyName && (
+              <span className="text-[10px] uppercase tracking-wider text-sidebar-foreground/70">
+                {appName}
+              </span>
+            )}
           </div>
         </div>
       </SidebarHeader>
