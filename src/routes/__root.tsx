@@ -122,6 +122,7 @@ function RootComponent() {
   const isLoggedIn = useCirta((s) => s.auth.isLoggedIn);
   const displayName = useCirta((s) => s.auth.displayName);
   const logout = useCirta((s) => s.logout);
+  const { fullTitle } = useBranding();
 
   if (!isLoggedIn) return <LoginGate />;
 
@@ -133,10 +134,7 @@ function RootComponent() {
           <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-card/80 px-4 backdrop-blur">
             <SidebarTrigger />
             <div className="flex flex-1 items-center gap-2">
-              <span className="text-sm font-semibold text-foreground">CIRTA Recruitment Assistant</span>
-              <span className="hidden text-xs text-muted-foreground sm:inline">
-                — Plateforme d'aide au recrutement industriel
-              </span>
+              <span className="text-sm font-semibold text-foreground">{fullTitle}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="hidden sm:block"><AIUsageBadge compact /></div>
