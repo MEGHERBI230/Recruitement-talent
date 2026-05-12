@@ -63,9 +63,18 @@ function PostesPage() {
   const printPoste = (id: string) => {
     setPrintOneId(id);
     setDetailPrint(true);
+    // Forcer A4 portrait pour l'impression d'un poste détaillé
+    const style = document.createElement("style");
+    style.id = "print-portrait-style";
+    style.innerHTML = "@media print { @page { size: A4 portrait; margin: 0; } }";
+    document.head.appendChild(style);
     setTimeout(() => {
       printPage();
-      setTimeout(() => { setDetailPrint(false); setPrintOneId(null); }, 500);
+      setTimeout(() => {
+        setDetailPrint(false);
+        setPrintOneId(null);
+        document.getElementById("print-portrait-style")?.remove();
+      }, 500);
     }, 100);
   };
 

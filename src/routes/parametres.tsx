@@ -208,11 +208,51 @@ function Parametres() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader><CardTitle className="text-base">Entreprise</CardTitle></CardHeader>
-          <CardContent className="space-y-1 text-sm">
-            <div><b>CIRTA AUTOMOTIVE</b></div>
-            <div className="text-muted-foreground">Constantine, Algérie</div>
+        <Card className="md:col-span-2">
+          <CardHeader><CardTitle className="text-base">Entreprise (en-tête & sidebar)</CardTitle></CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-xs text-muted-foreground">Le nom et le logo de l'entreprise apparaîtront en haut de l'application et sur tous les documents imprimés. Laissez vide pour utiliser uniquement « Recruitment Assistant » avec le logo générique.</p>
+            <div>
+              <Label>Nom de l'entreprise</Label>
+              <Input
+                value={user.companyName ?? ""}
+                onChange={(e) => updateUser({ companyName: e.target.value })}
+                maxLength={120}
+                placeholder="Ex : CIRTA AUTOMOTIVE"
+              />
+            </div>
+            <div>
+              <Label>Logo de l'entreprise (PNG/JPG, max 2 Mo)</Label>
+              <div className="mt-2 flex items-start gap-4">
+                <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded border border-dashed border-border bg-muted/30">
+                  {user.companyLogo ? (
+                    <img src={user.companyLogo} alt="Logo" className="max-h-full max-w-full object-contain" />
+                  ) : (
+                    <span className="text-[10px] text-muted-foreground text-center px-1">Logo générique</span>
+                  )}
+                </div>
+                <div className="flex flex-col gap-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (!f) return;
+                      if (f.size > 2 * 1024 * 1024) { toast.error("Image trop lourde (max 2 Mo)"); return; }
+                      const r = new FileReader();
+                      r.onload = () => { updateUser({ companyLogo: r.result as string }); toast.success("Logo enregistré"); };
+                      r.readAsDataURL(f);
+                      e.target.value = "";
+                    }}
+                  />
+                  {user.companyLogo && (
+                    <Button variant="ghost" size="sm" onClick={() => { updateUser({ companyLogo: undefined }); toast.success("Logo supprimé — logo générique restauré"); }}>
+                      <Trash2 className="mr-2 h-4 w-4" /> Retirer le logo
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
         <Card>
