@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel,
 } from "@/components/ui/select";
 import {
   Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle,
@@ -23,7 +23,7 @@ import { Letterhead, LetterheadFooter } from "@/components/Letterhead";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { BU_LABELS, BU_COLORS, PRIORITY_LABELS, BU, Priority, Poste, MACHINES } from "@/data/cirta";
+import { BU_LABELS, BU_COLORS, PRIORITY_LABELS, BU, Priority, Poste, MACHINES, ORG_UNITS } from "@/data/cirta";
 import { useCirta } from "@/store/useCirta";
 import { toast } from "sonner";
 import { ImportButton } from "@/components/ImportButton";
