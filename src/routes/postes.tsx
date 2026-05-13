@@ -89,7 +89,7 @@ function PostesPage() {
   const openEdit = (p: Poste) => {
     setEditId(p.id);
     setForm({
-      intitule: p.intitule, bu: p.bu, quantite: p.quantite, priorite: p.priorite,
+      intitule: p.intitule, bu: p.bu, unite: p.unite ?? "", quantite: p.quantite, priorite: p.priorite,
       experienceMin: p.experienceMin, diplome: p.diplome,
       competences: p.competences.join(", "), machines: [...p.machines],
       hardSkills: (p.hardSkills ?? []).join(", "),
@@ -105,7 +105,7 @@ function PostesPage() {
     const hardSkills = form.hardSkills.split(",").map((s) => s.trim()).filter(Boolean);
     const softSkills = form.softSkills.split(",").map((s) => s.trim()).filter(Boolean);
     const payload = {
-      intitule: form.intitule, bu: form.bu, quantite: form.quantite, priorite: form.priorite,
+      intitule: form.intitule, bu: form.bu, unite: form.unite || undefined, quantite: form.quantite, priorite: form.priorite,
       experienceMin: form.experienceMin, diplome: form.diplome,
       competences, machines, hardSkills, softSkills,
     };
