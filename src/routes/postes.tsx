@@ -32,13 +32,13 @@ import { importPostes } from "@/lib/import-xlsx";
 export const Route = createFileRoute("/postes")({ component: PostesPage });
 
 interface FormState {
-  intitule: string; bu: BU; quantite: number; priorite: Priority;
+  intitule: string; bu: BU; unite: string; quantite: number; priorite: Priority;
   experienceMin: number; diplome: string; competences: string; machines: string[];
   hardSkills: string; softSkills: string;
 }
 
 const EMPTY: FormState = {
-  intitule: "", bu: "BU1", quantite: 1, priorite: "prioritaire",
+  intitule: "", bu: "BU1", unite: "", quantite: 1, priorite: "prioritaire",
   experienceMin: 1, diplome: "TS", competences: "", machines: [],
   hardSkills: "", softSkills: "",
 };
