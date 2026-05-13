@@ -21,6 +21,7 @@ export interface Poste {
   id: string;
   intitule: string;
   bu: BU;
+  unite?: string;
   quantite: number;
   priorite: Priority;
   competences: string[];
@@ -30,6 +31,152 @@ export interface Poste {
   hardSkills: string[];
   softSkills: string[];
 }
+
+/**
+ * Structure organisationnelle générique d'une entreprise de production.
+ * Regroupée par Direction puis triée alphabétiquement à l'intérieur de chaque groupe.
+ */
+export const ORG_UNITS: { group: string; items: string[] }[] = [
+  {
+    group: "Direction Générale",
+    items: [
+      "Audit Interne",
+      "Communication Institutionnelle",
+      "Direction Générale",
+      "Juridique",
+      "QHSE / SMI",
+      "Secrétariat de Direction",
+    ],
+  },
+  {
+    group: "Direction des Opérations — Départements",
+    items: [
+      "Amélioration Continue / Lean",
+      "HSE Production",
+      "Logistique",
+      "Magasin",
+      "Maintenance",
+      "Méthodes & Industrialisation",
+      "Planification",
+      "Production",
+      "Supply Chain",
+    ],
+  },
+  {
+    group: "Direction des Opérations — Unités / Ateliers",
+    items: [
+      "Atelier Assemblage",
+      "Atelier Injection",
+      "Atelier Mélange",
+      "Atelier Peinture",
+      "Atelier Usinage",
+      "Cellule Prototype",
+      "Ligne A",
+      "Ligne B",
+      "Ligne C",
+    ],
+  },
+  {
+    group: "Direction Qualité — Départements",
+    items: [
+      "Assurance Qualité",
+      "Audits internes",
+      "Contrôle Qualité",
+      "Gestion documentaire ISO",
+      "Laboratoire",
+      "Métrologie",
+      "Satisfaction client",
+      "Traitement des non-conformités",
+    ],
+  },
+  {
+    group: "Direction Qualité — Unités",
+    items: [
+      "Contrôle final",
+      "Contrôle process",
+      "Contrôle réception",
+      "Laboratoire essais",
+    ],
+  },
+  {
+    group: "Direction Supply Chain — Départements",
+    items: [
+      "Achats",
+      "Approvisionnement",
+      "Gestion des stocks",
+      "Logistique",
+      "Ordonnancement",
+      "Planification",
+      "Transit & Douane",
+    ],
+  },
+  {
+    group: "Direction Supply Chain — Unités",
+    items: ["Expédition", "Magasin MP", "Magasin PF", "Réception"],
+  },
+  {
+    group: "Direction Commerciale — Départements",
+    items: [
+      "ADV (Administration des ventes)",
+      "Export",
+      "Grands comptes",
+      "Marketing",
+      "Service client",
+      "Ventes",
+    ],
+  },
+  {
+    group: "Direction Commerciale — Unités",
+    items: ["Région Centre", "Région Est", "Région Ouest"],
+  },
+  {
+    group: "Direction Finance & Comptabilité",
+    items: [
+      "Budget",
+      "Comptabilité",
+      "Contrôle de gestion",
+      "Fiscalité",
+      "Recouvrement",
+      "Trésorerie",
+    ],
+  },
+  {
+    group: "Direction Ressources Humaines",
+    items: [
+      "Administration du personnel",
+      "Développement RH",
+      "Évaluation des compétences",
+      "Formation",
+      "Paie",
+      "Recrutement",
+    ],
+  },
+  {
+    group: "Direction Technique / Engineering",
+    items: [
+      "Bureau d'études",
+      "Dessin industriel",
+      "Développement produit",
+      "Industrialisation",
+      "R&D",
+    ],
+  },
+  {
+    group: "Direction Informatique / Digital",
+    items: [
+      "Cybersécurité",
+      "Développement",
+      "ERP",
+      "Infrastructure IT",
+      "Support utilisateurs",
+    ],
+  },
+];
+
+/** Liste plate triée pour recherche/validation. */
+export const ORG_UNITS_FLAT: string[] = Array.from(
+  new Set(ORG_UNITS.flatMap((g) => g.items)),
+).sort((a, b) => a.localeCompare(b, "fr"));
 
 export interface Machine {
   id: string;
