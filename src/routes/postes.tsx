@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel,
 } from "@/components/ui/select";
 import {
   Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle,
@@ -23,7 +23,7 @@ import { Letterhead, LetterheadFooter } from "@/components/Letterhead";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { BU_LABELS, BU_COLORS, PRIORITY_LABELS, BU, Priority, Poste, MACHINES } from "@/data/cirta";
+import { BU_LABELS, BU_COLORS, PRIORITY_LABELS, BU, Priority, Poste, MACHINES, ORG_UNITS } from "@/data/cirta";
 import { useCirta } from "@/store/useCirta";
 import { toast } from "sonner";
 import { ImportButton } from "@/components/ImportButton";
@@ -32,13 +32,13 @@ import { importPostes } from "@/lib/import-xlsx";
 export const Route = createFileRoute("/postes")({ component: PostesPage });
 
 interface FormState {
-  intitule: string; bu: BU; quantite: number; priorite: Priority;
+  intitule: string; bu: BU; unite: string; quantite: number; priorite: Priority;
   experienceMin: number; diplome: string; competences: string; machines: string[];
   hardSkills: string; softSkills: string;
 }
 
 const EMPTY: FormState = {
-  intitule: "", bu: "BU1", quantite: 1, priorite: "prioritaire",
+  intitule: "", bu: "BU1", unite: "", quantite: 1, priorite: "prioritaire",
   experienceMin: 1, diplome: "TS", competences: "", machines: [],
   hardSkills: "", softSkills: "",
 };
@@ -89,7 +89,7 @@ function PostesPage() {
   const openEdit = (p: Poste) => {
     setEditId(p.id);
     setForm({
-      intitule: p.intitule, bu: p.bu, quantite: p.quantite, priorite: p.priorite,
+      intitule: p.intitule, bu: p.bu, unite: p.unite ?? "", quantite: p.quantite, priorite: p.priorite,
       experienceMin: p.experienceMin, diplome: p.diplome,
       competences: p.competences.join(", "), machines: [...p.machines],
       hardSkills: (p.hardSkills ?? []).join(", "),
@@ -105,7 +105,7 @@ function PostesPage() {
     const hardSkills = form.hardSkills.split(",").map((s) => s.trim()).filter(Boolean);
     const softSkills = form.softSkills.split(",").map((s) => s.trim()).filter(Boolean);
     const payload = {
-      intitule: form.intitule, bu: form.bu, quantite: form.quantite, priorite: form.priorite,
+      intitule: form.intitule, bu: form.bu, unite: form.unite || undefined, quantite: form.quantite, priorite: form.priorite,
       experienceMin: form.experienceMin, diplome: form.diplome,
       competences, machines, hardSkills, softSkills,
     };
@@ -227,6 +227,7 @@ function PostesPage() {
               </h2>
               <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
                 <div><span className="font-semibold">Business Unit :</span> {BU_LABELS[p.bu]} ({p.bu})</div>
+                {p.unite && <div><span className="font-semibold">Unité / Direction :</span> {p.unite}</div>}
                 <div><span className="font-semibold">Priorité :</span> {PRIORITY_LABELS[p.priorite].label}</div>
                 <div><span className="font-semibold">Quantité à pourvoir :</span> {p.quantite}</div>
                 <div><span className="font-semibold">Expérience minimale :</span> {p.experienceMin} ans</div>
@@ -272,6 +273,21 @@ function PostesPage() {
               <Select value={form.priorite} onValueChange={(v) => setForm({ ...form, priorite: v as Priority })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>{(Object.keys(PRIORITY_LABELS) as Priority[]).map((p) => <SelectItem key={p} value={p}>{PRIORITY_LABELS[p].label}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div className="col-span-2">
+              <Label>Unité / Direction / Département / Atelier</Label>
+              <Select value={form.unite || "__none__"} onValueChange={(v) => setForm({ ...form, unite: v === "__none__" ? "" : v })}>
+                <SelectTrigger><SelectValue placeholder="Choisir une unité organisationnelle..." /></SelectTrigger>
+                <SelectContent className="max-h-[320px]">
+                  <SelectItem value="__none__">— Aucune —</SelectItem>
+                  {ORG_UNITS.map((g) => (
+                    <SelectGroup key={g.group}>
+                      <SelectLabel>{g.group}</SelectLabel>
+                      {g.items.map((it) => <SelectItem key={`${g.group}-${it}`} value={it}>{it}</SelectItem>)}
+                    </SelectGroup>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
             <div><Label>Quantité à pourvoir</Label><Input type="number" min={1} value={form.quantite} onChange={(e) => setForm({ ...form, quantite: +e.target.value || 1 })} /></div>

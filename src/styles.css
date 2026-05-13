@@ -157,12 +157,21 @@
   /* margin:0 supprime les en-têtes/pieds par défaut du navigateur (URL, date, n° page) */
   @page { size: A4 landscape; margin: 0; }
   html, body { background: white !important; margin: 0 !important; }
-  body { padding: 10mm 12mm 10mm 12mm !important; }
+  /* Padding haut = place pour l'en-tête fixe répété sur chaque page ; padding bas = footer */
+  body { padding: 38mm 12mm 12mm 12mm !important; }
   [data-sidebar], header.sticky, .no-print { display: none !important; }
   main { padding: 0 !important; }
   .print-area { box-shadow: none !important; }
   .print-break { page-break-before: always; }
   .print-only { display: block !important; }
+  /* En-tête répété sur chaque page imprimée (position: fixed est rendue sur chaque page par les navigateurs) */
+  .print-letterhead {
+    position: fixed !important;
+    top: 0; left: 0; right: 0;
+    padding: 6mm 12mm 4mm 12mm;
+    background: white !important;
+    z-index: 9999;
+  }
   /* Réserver la place pour la signature en bas de la dernière page */
   .print-footer { page-break-inside: avoid; margin-top: 20mm; }
   /* Eviter de couper les lignes du tableau */
