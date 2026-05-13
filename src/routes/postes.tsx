@@ -227,6 +227,7 @@ function PostesPage() {
               </h2>
               <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
                 <div><span className="font-semibold">Business Unit :</span> {BU_LABELS[p.bu]} ({p.bu})</div>
+                {p.unite && <div><span className="font-semibold">Unité / Direction :</span> {p.unite}</div>}
                 <div><span className="font-semibold">Priorité :</span> {PRIORITY_LABELS[p.priorite].label}</div>
                 <div><span className="font-semibold">Quantité à pourvoir :</span> {p.quantite}</div>
                 <div><span className="font-semibold">Expérience minimale :</span> {p.experienceMin} ans</div>
