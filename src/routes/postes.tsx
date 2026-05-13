@@ -274,6 +274,21 @@ function PostesPage() {
                 <SelectContent>{(Object.keys(PRIORITY_LABELS) as Priority[]).map((p) => <SelectItem key={p} value={p}>{PRIORITY_LABELS[p].label}</SelectItem>)}</SelectContent>
               </Select>
             </div>
+            <div className="col-span-2">
+              <Label>Unité / Direction / Département / Atelier</Label>
+              <Select value={form.unite || "__none__"} onValueChange={(v) => setForm({ ...form, unite: v === "__none__" ? "" : v })}>
+                <SelectTrigger><SelectValue placeholder="Choisir une unité organisationnelle..." /></SelectTrigger>
+                <SelectContent className="max-h-[320px]">
+                  <SelectItem value="__none__">— Aucune —</SelectItem>
+                  {ORG_UNITS.map((g) => (
+                    <SelectGroup key={g.group}>
+                      <SelectLabel>{g.group}</SelectLabel>
+                      {g.items.map((it) => <SelectItem key={`${g.group}-${it}`} value={it}>{it}</SelectItem>)}
+                    </SelectGroup>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <div><Label>Quantité à pourvoir</Label><Input type="number" min={1} value={form.quantite} onChange={(e) => setForm({ ...form, quantite: +e.target.value || 1 })} /></div>
             <div><Label>Expérience minimale (ans)</Label><Input type="number" min={0} value={form.experienceMin} onChange={(e) => setForm({ ...form, experienceMin: +e.target.value || 0 })} /></div>
             <div className="col-span-2">
